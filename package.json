@@ -1,7 +1,7 @@
 {
   "name": "payload-folder-tree-view",
-  "version": "1.0.0",
-  "description": "A blank template to get started with Payload 3.0",
+  "version": "0.0.1",
+  "description": "A tree view component for Payload CMS to display folders and files using the Folders functionality",
   "license": "MIT",
   "type": "module",
   "exports": {
