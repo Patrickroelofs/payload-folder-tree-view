@@ -3,11 +3,12 @@ import React, { useCallback, useState } from 'react';
 
 import type { TreeDataItem } from './TreeView.js';
 
+import styles from "./styles.module.css";
+
 interface TreeViewClientProps {
   data: TreeDataItem[];
 }
 
-// Utility to sort folders first then alphabetically
 function sortTree(nodes: TreeDataItem[]): TreeDataItem[] {
   return [...nodes].sort((a, b) => {
     const aIsFolder = Array.isArray(a.children) && a.children.length > 0;
@@ -20,7 +21,6 @@ function sortTree(nodes: TreeDataItem[]): TreeDataItem[] {
 }
 
 export const TreeViewClient: React.FC<TreeViewClientProps> = ({ data }) => {
-  // Maintain a set of expanded folder ids
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
 
   const toggle = useCallback((id: string) => {
@@ -40,75 +40,49 @@ export const TreeViewClient: React.FC<TreeViewClientProps> = ({ data }) => {
   };
 
   const renderNodes = (nodes: TreeDataItem[], depth = 0) => (
-    <ul style={{ listStyle: 'none', marginLeft: depth === 0 ? 0 : 12, paddingLeft: 0, width: "230px" }}>
+    <ul className={styles.treeList} data-depth={depth}>
       {sortTree(nodes).map(node => {
         const isFolder = Array.isArray(node.children) && node.children.length > 0;
         const isOpen = isFolder && expanded.has(node.id);
 
         return (
-          <li key={node.id}>
+          <li className={styles.treeItem} key={node.id}>
             {isFolder ? (
-              <div style={{ alignItems: 'center', display: 'flex', gap: 4 }}>
+              <div className={styles.folderRow}>
+                <button
+                  aria-expanded={isOpen}
+                  aria-label={`${isOpen ? 'Collapse' : 'Expand'} folder ${node.name}`}
+                  className={styles.toggleButton}
+                  onClick={() => toggle(node.id)}
+                  type="button"
+                >
+                  <span className={styles.disclosureIcon}>
+                    {isOpen ? '▾' : '▸'}
+                  </span>
+                  <span>{node.name}</span>
+                </button>
+
                 <button
                   aria-label={`Open folder ${node.name}`}
+                  className={styles.openFolderButton}
                   onClick={(e) => {
                     e.stopPropagation();
                     window.location.href = buildNodeHref(node);
-                  }}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontFamily: 'monospace',
-                    padding: 0,
-                    userSelect: 'none'
                   }}
                   title={`Open folder ${node.name}`}
                   type="button"
                 >
                   ↗
                 </button>
-
-                <button
-                  aria-expanded={isOpen}
-                  aria-label={`${isOpen ? 'Collapse' : 'Expand'} folder ${node.name}`}
-                  onClick={() => toggle(node.id)}
-                  style={{
-                    alignItems: 'center',
-                    background: 'transparent',
-                    border: 'none',
-                    display: 'flex',
-                    fontFamily: 'monospace',
-                    gap: 4,
-                    padding: 0,
-                    userSelect: 'none'
-                  }}
-                  type="button"
-                >
-                  <span style={{ display: 'inline-block', textAlign: 'center', width: 16 }}>
-                    {isOpen ? '▾' : '▸'}
-                  </span>
-                  <span>{node.name}</span>
-                </button>
-
               </div>
             ) : (
               <button
                 aria-label={`Open item ${node.name}`}
+                className={styles.itemButton}
                 onClick={() => { window.location.href = buildNodeHref(node); }}
-                style={{
-                  alignItems: 'center',
-                  background: 'transparent',
-                  border: 'none',
-                  display: 'flex',
-                  fontFamily: 'monospace',
-                  gap: 4,
-                  padding: 0,
-                  userSelect: 'none'
-                }}
                 type="button"
               >
-                <span style={{ display: 'inline-block', width: 16 }} />
+                <span className={styles.disclosureSpacer} />
                 <span>{node.name}</span>
               </button>
             )}
@@ -121,7 +95,7 @@ export const TreeViewClient: React.FC<TreeViewClientProps> = ({ data }) => {
     </ul>
   );
 
-  return <div>{renderNodes(data)}</div>;
+  return <div className={styles.treeRoot}>{renderNodes(data)}</div>;
 };
 
 export default TreeViewClient;
