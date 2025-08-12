@@ -25,11 +25,11 @@ export const TreeViewClient: React.FC<TreeViewClientProps> = ({ data }) => {
   }, []);
 
   const buildNodeHref = (node: TreeNode) => {
-    return ``;
+    return `/admin/browse-by-folder/${node.id}`;
   };
 
   const buildDocumentHref = (doc: DocType) => {
-    return '#';
+    return `/admin/collections/${doc.relationTo}/${doc._id}`;
   };
 
   const getDocumentLabel = (doc: DocType) => {
