@@ -1,18 +1,18 @@
 import type { Config } from 'payload'
 
+export type PayloadFolderTreeViewCollections = {
+  slug: string;
+  useAsTitle: string;
+}
+
 export type PayloadFolderTreeViewConfig = {
+  collections?: PayloadFolderTreeViewCollections[]
   disabled?: boolean
 }
 
 export const PayloadFolderTreeView =
   (pluginOptions: PayloadFolderTreeViewConfig) =>
     (config: Config): Config => {
-      const { admin } = config;
-
-      if (!config.collections) {
-        config.collections = []
-      }
-
       if (pluginOptions.disabled) {
         return config
       }
@@ -20,12 +20,15 @@ export const PayloadFolderTreeView =
       return {
         ...config,
         admin: {
-          ...admin,
+          ...config.admin,
           components: {
-            ...admin?.components,
+            ...config.admin?.components,
             beforeNavLinks: [
               {
-                path: 'payload-folder-tree-view/client#TreeViewComponent'
+                path: 'payload-folder-tree-view/rsc#TreeViewServer',
+                serverProps: {
+                  collections: pluginOptions.collections,
+                }
               }
             ]
           }
