@@ -6,7 +6,7 @@
 
 Payload Folders Tree View is a plugin for Payload CMS that adds a collapsible folder tree to the Admin UI, making it easy to browse and find documents by folders across multiple collections. It leverages Payload’s built-in folders feature and injects a component into the admin navigation.
 
-![Screenshot of payload folders tree view](./github/assets/plugin-screenshot.png)
+![Screenshot of payload folders tree view](.github/assets/plugin-screenshot.png)
 
 ## Quick start
 1) Install
