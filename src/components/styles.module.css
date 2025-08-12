@@ -2,14 +2,6 @@
   overflow-x: scroll;
   padding-bottom: 16px;
 }
-
-:root {
-	--tree-guide-color: #d0d0d0;
-}
-@media (prefers-color-scheme: dark) {
-	:root { --tree-guide-color: #444; }
-}
-
 .treeList {
 	list-style: none;
 	margin: 0;
@@ -21,7 +13,7 @@
 .treeList[data-depth]:not([data-depth="0"]) {
 	margin-left: 6px;
 	padding-left: 12px;
-	border-left: 1px solid var(--tree-guide-color, #d0d0d0);
+	border-left: 1px solid #000000;
 }
 
 .treeItem { margin: 0; padding: 0; }
@@ -49,7 +41,12 @@
 
 .openFolderButton:hover,
 .toggleButton:hover,
-.itemButton:hover { text-decoration: underline; }
+.itemButton:hover,
+.itemLink:hover {
+	.itemName {
+		text-decoration: underline;
+	}
+}
 
 .disclosureIcon,
 .disclosureSpacer {
@@ -60,7 +57,8 @@
 
 .openFolderButton:focus-visible,
 .toggleButton:focus-visible,
-.itemButton:focus-visible {
+.itemButton:focus-visible,
+.itemLink:focus-visible {
 	outline: 2px solid currentColor;
 	outline-offset: 2px;
 }
@@ -68,4 +66,8 @@
 .openFolderButton {
   position: absolute;
   right: 8px;
+}
+
+.itemLink {
+	text-decoration: none;
 }

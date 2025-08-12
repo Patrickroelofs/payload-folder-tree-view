@@ -38,7 +38,16 @@ const buildConfigWithMemoryDB = async () => {
     collections: [
       {
         slug: 'posts',
-        fields: [],
+        admin: {
+          useAsTitle: 'title',
+        },
+        fields: [
+          {
+            name: 'title',
+            type: 'text',
+            required: true,
+          }
+        ],
         folders: true,
       },
       {
@@ -59,7 +68,18 @@ const buildConfigWithMemoryDB = async () => {
       await seed(payload)
     },
     plugins: [
-      PayloadFolderTreeView({})
+      PayloadFolderTreeView({
+        collections: [
+          {
+            slug: 'posts',
+            useAsTitle: 'title',
+          },
+          {
+            slug: 'media',
+            useAsTitle: 'filename',
+          }
+        ]
+      })
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     sharp,
@@ -70,4 +90,3 @@ const buildConfigWithMemoryDB = async () => {
 }
 
 export default buildConfigWithMemoryDB()
-  

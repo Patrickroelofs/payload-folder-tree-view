@@ -1,23 +1,12 @@
 "use client";
-import React, { useCallback, useState } from 'react';
+import type { DocType, TreeNode } from 'src/lib/buildFolderTree.js';
 
-import type { TreeDataItem } from './TreeView.js';
+import React, { useCallback, useState } from 'react';
 
 import styles from "./styles.module.css";
 
 interface TreeViewClientProps {
-  data: TreeDataItem[];
-}
-
-function sortTree(nodes: TreeDataItem[]): TreeDataItem[] {
-  return [...nodes].sort((a, b) => {
-    const aIsFolder = Array.isArray(a.children) && a.children.length > 0;
-    const bIsFolder = Array.isArray(b.children) && b.children.length > 0;
-    if (aIsFolder !== bIsFolder) {
-      return aIsFolder ? -1 : 1;
-    }
-    return a.name.localeCompare(b.name);
-  });
+  data: TreeNode[];
 }
 
 export const TreeViewClient: React.FC<TreeViewClientProps> = ({ data }) => {
@@ -35,60 +24,82 @@ export const TreeViewClient: React.FC<TreeViewClientProps> = ({ data }) => {
     });
   }, []);
 
-  const buildNodeHref = (node: TreeDataItem) => {
-    return `/admin/${node.relationTo === 'payload-folders' ? 'browse-by-folder/' : 'collections/'}${node.relationTo !== 'payload-folders' ? node.relationTo : ''}/${node.id}`;
+  const buildNodeHref = (node: TreeNode) => {
+    return ``;
   };
 
-  const renderNodes = (nodes: TreeDataItem[], depth = 0) => (
+  const buildDocumentHref = (doc: DocType) => {
+    return '#';
+  };
+
+  const getDocumentLabel = (doc: DocType) => {
+    return doc.title || doc._id;
+  };
+
+  const renderDocuments = (docs: DocType[], depth: number) => {
+    if (!docs?.length) { return null; }
+    return (
+      <ul className={styles.treeList} data-depth={depth}>
+        {docs.map((doc) => (
+          <li className={styles.treeItem} data-type="document" key={doc._id}>
+            <div className={styles.folderRow}>
+              <a
+                className={styles.itemLink}
+                href={buildDocumentHref(doc)}
+                onClick={(e) => e.stopPropagation()}
+                title={getDocumentLabel(doc)}
+              >
+                <span className={styles.itemName}>
+                  {getDocumentLabel(doc)}
+                </span>
+              </a>
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  const renderNodes = (nodes: TreeNode[], depth = 0) => (
     <ul className={styles.treeList} data-depth={depth}>
-      {sortTree(nodes).map(node => {
-        const isFolder = Array.isArray(node.children) && node.children.length > 0;
-        const isOpen = isFolder && expanded.has(node.id);
+      {nodes.map(node => {
+        const isOpen = expanded.has(node.id);
 
         return (
           <li className={styles.treeItem} key={node.id}>
-            {isFolder ? (
-              <div className={styles.folderRow}>
-                <button
-                  aria-expanded={isOpen}
-                  aria-label={`${isOpen ? 'Collapse' : 'Expand'} folder ${node.name}`}
-                  className={styles.toggleButton}
-                  onClick={() => toggle(node.id)}
-                  type="button"
-                >
-                  <span className={styles.disclosureIcon}>
-                    {isOpen ? '▾' : '▸'}
-                  </span>
-                  <span>{node.name}</span>
-                </button>
-
-                <button
-                  aria-label={`Open folder ${node.name}`}
-                  className={styles.openFolderButton}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.location.href = buildNodeHref(node);
-                  }}
-                  title={`Open folder ${node.name}`}
-                  type="button"
-                >
-                  ↗
-                </button>
-              </div>
-            ) : (
+            <div className={styles.folderRow}>
               <button
-                aria-label={`Open item ${node.name}`}
-                className={styles.itemButton}
-                onClick={() => { window.location.href = buildNodeHref(node); }}
+                aria-expanded={isOpen}
+                aria-label={`${isOpen ? 'Collapse' : 'Expand'} folder ${node.name}`}
+                className={styles.toggleButton}
+                onClick={() => toggle(node.id)}
                 type="button"
               >
-                <span className={styles.disclosureSpacer} />
-                <span>{node.name}</span>
+                <span className={styles.disclosureIcon}>
+                  {isOpen ? '▾' : '▸'}
+                </span>
+                <span className={styles.itemName}>{node.name}</span>
               </button>
+
+              <button
+                aria-label={`Open folder ${node.name}`}
+                className={styles.openFolderButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.location.href = buildNodeHref(node);
+                }}
+                title={`Open folder ${node.name}`}
+                type="button"
+              >
+                ↗
+              </button>
+            </div>
+
+            {isOpen && node.folders && (
+              <div>{renderNodes(node.folders, depth + 1)}</div>
             )}
-            {isFolder && isOpen && node.children && (
-              <div>{renderNodes(node.children, depth + 1)}</div>
-            )}
+
+            {isOpen && Array.isArray(node.documents) && renderDocuments(node.documents, depth + 1)}
           </li>
         );
       })}
