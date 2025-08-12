@@ -28,4 +28,4 @@ Please be respectful and considerate in all interactions.
 
 ---
 
-Thank you for helping improve payload-exif!
+Thank you for helping improve payload-folders-tree-view!
