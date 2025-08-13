@@ -1,117 +1,112 @@
-export type DocType = {
-  _id: string;
-  createdAt: string;
-  relationTo: string;
-  title?: string;
-  value: string;
+export type Document = {
+  id: string;
 }
 
 export type Folder = {
-  createdAt: string;
-  documentsAndFolders: DocType[];
-  folder: Folder[] | null;
   id: string;
-  name: string;
-  updatedAt: string;
+}
+
+export type FlatTree = {
+  items: Record<string, {
+    documents?: Document[];
+    folders?: Folder[];
+    title?: string;
+  }>;
+  rootIds: string[];
+};
+export type FolderEntry = {
+  _id?: string;
+  documentsAndFolders?: { docs?: FolderEntry[] };
+  folderType: string[];
+  id?: string;
+  name?: string;
+  relationTo?: string;
+  value: {
+    [key: string]: unknown;
+    _id: string;
+    id: string;
+    name: string;
+  };
 };
 
-export type TreeNode = {
-  createdAt: string;
-  documents: DocType[];
-  folders: TreeNode[];
-  id: string;
-  name: string;
-  updatedAt: string;
+const getId = (val: FolderEntry | FolderEntry['value']): string => {
+  return val.id || val._id || '';
 };
 
-export function buildFolderTree({ allDocs }: {
-  allDocs: Folder[]
-}) {
-  const byId = new Map<string, Folder>();
-  for (const f of allDocs) { byId.set(f.id, f); }
+export function buildSimpleFolderTree(docs: FolderEntry[]): FlatTree {
+  const items: FlatTree["items"] = {};
+  const nonRootIds = new Set<string>();
+  const visiting = new Set<string>();
+  const processed = new Set<string>();
+  const cycles: string[] = [];
 
-  const getDocsArray = (df: any): DocType[] => {
-    if (!df) { return []; }
-    if (Array.isArray(df)) { return df as DocType[]; }
-    if (typeof df === 'object' && Array.isArray(df.docs)) { return df.docs as DocType[]; }
-    return [];
+  const ensureNode = (id: string, src?: FolderEntry) => {
+    const node = (items[id] ??= {});
+    if (!node.title && src) {
+      node.title = src.name || src.value?.name;
+    }
+    return node;
   };
 
-  const getValueId = (val: any): null | string => {
-    if (!val) { return null; }
-    if (typeof val === 'string') { return val; }
-    if (typeof val === 'object' && typeof val.id === 'string') { return val.id; }
-    return null;
-  };
+  const processNode = (node: FolderEntry): string => {
+    const id = getId(node);
+    if (!id) {
+      return '';
+    }
 
-  const getParentId = (folderField: any): null | string => {
-    if (!folderField) { return null; }
-    if (typeof folderField === 'string') { return folderField; }
-    if (typeof folderField === 'object' && typeof folderField.id === 'string') { return folderField.id; }
-    return null;
-  };
+    if (visiting.has(id)) {
+      cycles.push(id);
+      return id;
+    }
+    if (processed.has(id)) {
+      return id;
+    }
 
-  const nodes = new Map<string, TreeNode>();
-  const childMap = new Map<string, string[]>();
-  const hasParent = new Set<string>();
+    ensureNode(id, node);
+    visiting.add(id);
 
-  const refMap = new Map<string, { collection: string; id: string }>();
-  const makeKey = (collection: string, id: string) => `${collection}::${id}`;
+    const entries = Array.isArray(node.documentsAndFolders?.docs)
+      ? node.documentsAndFolders.docs
+      : [];
 
-  for (const f of allDocs) {
-    const docs = getDocsArray(f.documentsAndFolders);
+    for (const entry of entries) {
+      if (!entry) { continue; }
 
-    for (const d of docs) {
-      if (d.relationTo !== 'payload-folders') {
-        const docId = getValueId(d.value);
+      if (entry.relationTo === 'payload-folders') {
+        const folderId = processNode(entry);
+        if (folderId && folderId !== id) {
+          nonRootIds.add(folderId);
+          const parent = ensureNode(id);
+          const foldersArr = (parent.folders ??= []);
+          if (!foldersArr.some(f => f.id === folderId)) {
+            foldersArr.push({ id: folderId });
+          }
+        }
+      } else {
+        const docId = getId(entry.value ?? entry);
         if (docId) {
-          refMap.set(makeKey(d.relationTo, docId), { id: docId, collection: d.relationTo });
+          const parent = ensureNode(id);
+          const docsArr = (parent.documents ??= []);
+          if (!docsArr.some(d => d.id === docId)) {
+            docsArr.push({ id: docId });
+          }
         }
       }
     }
 
-    const documents = docs.filter(d => d.relationTo !== 'payload-folders');
-
-    nodes.set(f.id, {
-      id: f.id,
-      name: f.name,
-      createdAt: f.createdAt,
-      documents,
-      folders: [],
-      updatedAt: f.updatedAt
-    });
-
-    const childIds: string[] = [];
-    for (const d of docs) {
-      if (d.relationTo === 'payload-folders') {
-        const id = getValueId(d.value);
-        if (id) { childIds.push(id); }
-      }
-    }
-    childMap.set(f.id, childIds);
-
-    const parentId = getParentId(f.folder);
-    if (parentId) { hasParent.add(f.id); }
-  }
-
-  let rootIds: string[] = [];
-  if (hasParent.size) {
-    rootIds = [...nodes.keys()].filter(id => !hasParent.has(id));
-  } else {
-    const referenced = new Set<string>();
-    for (const ids of childMap.values()) { for (const id of ids) { referenced.add(id); } }
-    rootIds = [...nodes.keys()].filter(id => !referenced.has(id));
-  }
-
-  const visited = new Set<string>();
-  const build = (id: string): TreeNode => {
-    if (visited.has(id)) { return nodes.get(id)!; }
-    visited.add(id);
-    const node = nodes.get(id)!;
-    const kids = (childMap.get(id) || []).filter(k => nodes.has(k));
-    node.folders = kids.map(build);
-    return node;
+    visiting.delete(id);
+    processed.add(id);
+    return id;
   };
 
-  return rootIds.filter(id => nodes.has(id)).map(build);
+  for (const rootCandidate of docs) {
+    const rootId = processNode(rootCandidate);
+    if (rootId) {
+      ensureNode(rootId, rootCandidate);
+    }
+  }
+
+  const rootIds = Object.keys(items).filter(id => !nonRootIds.has(id));
+
+  return { items, rootIds };
 }
