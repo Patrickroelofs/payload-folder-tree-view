@@ -1,4 +1,3 @@
-"use client";
 import type { DocType, TreeNode } from 'src/lib/buildFolderTree.js';
 
 import { Link, NavGroup } from '@payloadcms/ui';
@@ -10,7 +9,7 @@ interface TreeViewClientProps {
   data: TreeNode[];
 }
 
-export const TreeViewClient: React.FC<TreeViewClientProps> = ({ data }) => {
+const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data }) => {
   // TODO: Reimplement open folder icon
   const buildNodeHref = (node: TreeNode) => {
     return `/admin/browse-by-folder/${node.id}`;
@@ -44,7 +43,7 @@ export const TreeViewClient: React.FC<TreeViewClientProps> = ({ data }) => {
   };
 
   const renderFolders = (nodes: TreeNode[], depth = 0) => (
-    <ul data-depth={depth}>
+    <ul className={styles.documentList} data-depth={depth}>
       {nodes.map(node => {
         return (
           <NavGroup data-depth={depth} isOpen={false} key={node.id} label={node.name}>
@@ -75,4 +74,4 @@ export const TreeViewClient: React.FC<TreeViewClientProps> = ({ data }) => {
   );
 };
 
-export default TreeViewClient;
+export default TreeViewComponent;
