@@ -11,11 +11,10 @@ on:
           - patch
           - minor
           - major
-      prerelease:
-        description: 'Mark as pre-release'
+      release_notes:
+        description: 'Optional custom changelog (use \\n for new lines)'
         required: false
-        type: boolean
-        default: false
+        type: string
 
 jobs:
   release:
@@ -100,16 +99,21 @@ jobs:
 
       - name: Create GitHub Release
         run: |
-          PRERELEASE_FLAG=""
-          if [ "${{ github.event.inputs.prerelease }}" = "true" ]; then
-            PRERELEASE_FLAG="--prerelease"
+          NOTES_INPUT="${{ github.event.inputs.release_notes }}"
+          # Convert literal \n sequences into actual newlines (user can input escaped newlines)
+          NOTES_INPUT="${NOTES_INPUT//\\n/$'\n'}"
+
+            if [ -z "$NOTES_INPUT" ]; then
+            printf "## What's Changed\n\n**Full Changelog**: https://github.com/${{ github.repository }}/commits/v${{ steps.version.outputs.version }}\n" > RELEASE_NOTES.md
+          else
+            printf "%s\n\n**Full Changelog**: https://github.com/${{ github.repository }}/commits/v${{ steps.version.outputs.version }}\n" "$NOTES_INPUT" > RELEASE_NOTES.md
           fi
-          
+
+          echo "---- Release Notes ----"
+          cat RELEASE_NOTES.md
+
           gh release create "v${{ steps.version.outputs.version }}" \
             --title "Release v${{ steps.version.outputs.version }}" \
-            --notes "## What's Changed
-          
-          **Full Changelog**: https://github.com/${{ github.repository }}/commits/v${{ steps.version.outputs.version }}" \
-            $PRERELEASE_FLAG
+            --notes-file RELEASE_NOTES.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
