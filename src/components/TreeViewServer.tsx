@@ -1,9 +1,7 @@
 import type { ServerComponentProps } from "payload"
 import type { PayloadFolderTreeViewConfig } from "src/index.js"
 
-import type { Folder } from "../lib/buildFolderTree.js";
-
-import { buildFolderTree } from "../lib/buildFolderTree.js"
+import { buildSimpleFolderTree } from "../lib/buildFolderTree.js"
 import TreeViewComponent from "./TreeViewComponent.js";
 
 export const TreeViewServer = async (props: PayloadFolderTreeViewConfig & ServerComponentProps) => {
@@ -11,9 +9,9 @@ export const TreeViewServer = async (props: PayloadFolderTreeViewConfig & Server
     collection: 'payload-folders',
   })
 
-  const treeData = buildFolderTree({
-    allDocs: folders.docs as Folder[],
-  })
+  const treeData = buildSimpleFolderTree(folders.docs);
+
+  console.log(treeData)
 
   return <TreeViewComponent data={treeData} />
 }
