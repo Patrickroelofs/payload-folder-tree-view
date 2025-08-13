@@ -6,23 +6,23 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./src/exports/index.ts",
-      "types": "./src/exports/index.ts",
-      "default": "./src/exports/index.ts"
+      "import": "./dist/exports/index.ts",
+      "types": "./dist/exports/index.ts",
+      "default": "./dist/exports/index.ts"
     },
     "./client": {
-      "import": "./src/exports/client.ts",
-      "types": "./src/exports/client.ts",
-      "default": "./src/exports/client.ts"
+      "import": "./dist/exports/client.ts",
+      "types": "./dist/exports/client.ts",
+      "default": "./dist/exports/client.ts"
     },
     "./rsc": {
-      "import": "./src/exports/rsc.ts",
-      "types": "./src/exports/rsc.ts",
-      "default": "./src/exports/rsc.ts"
+      "import": "./dist/exports/rsc.ts",
+      "types": "./dist/exports/rsc.ts",
+      "default": "./dist/exports/rsc.ts"
     }
   },
-  "main": "./src/exports/index.ts",
-  "types": "./src/exports/index.ts",
+  "main": "./dist/exports/index.ts",
+  "types": "./dist/exports/index.ts",
   "files": [
     "dist"
   ],
