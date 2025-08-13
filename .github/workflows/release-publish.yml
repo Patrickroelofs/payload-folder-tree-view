@@ -15,6 +15,11 @@ on:
         description: 'Optional custom changelog (use \\n for new lines)'
         required: false
         type: string
+      dry_run:
+        description: 'Dry run (build & compute version only, skip commit/tag/publish/release)'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   release:
@@ -80,6 +85,7 @@ jobs:
         run: pnpm build
 
       - name: Commit version change
+        if: ${{ github.event.inputs.dry_run != 'true' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -87,23 +93,25 @@ jobs:
           git commit -m "chore: bump version to v${{ steps.version.outputs.version }}"
 
       - name: Create and push tag
+        if: ${{ github.event.inputs.dry_run != 'true' }}
         run: |
           git tag -a "v${{ steps.version.outputs.version }}" -m "Release v${{ steps.version.outputs.version }}"
           git push origin HEAD
           git push origin "v${{ steps.version.outputs.version }}"
 
       - name: Publish to npm
+        if: ${{ github.event.inputs.dry_run != 'true' }}
         run: pnpm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
+        if: ${{ github.event.inputs.dry_run != 'true' }}
         run: |
           NOTES_INPUT="${{ github.event.inputs.release_notes }}"
           # Convert literal \n sequences into actual newlines (user can input escaped newlines)
           NOTES_INPUT="${NOTES_INPUT//\\n/$'\n'}"
-
-            if [ -z "$NOTES_INPUT" ]; then
+          if [ -z "$NOTES_INPUT" ]; then
             printf "## What's Changed\n\n**Full Changelog**: https://github.com/${{ github.repository }}/commits/v${{ steps.version.outputs.version }}\n" > RELEASE_NOTES.md
           else
             printf "%s\n\n**Full Changelog**: https://github.com/${{ github.repository }}/commits/v${{ steps.version.outputs.version }}\n" "$NOTES_INPUT" > RELEASE_NOTES.md
@@ -117,3 +125,25 @@ jobs:
             --notes-file RELEASE_NOTES.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Preview release notes (dry run)
+        if: ${{ github.event.inputs.dry_run == 'true' }}
+        run: |
+          NOTES_INPUT="${{ github.event.inputs.release_notes }}"
+          NOTES_INPUT="${NOTES_INPUT//\\n/$'\n'}"
+          if [ -z "$NOTES_INPUT" ]; then
+            printf "## What's Changed\n\n**Full Changelog**: https://github.com/${{ github.repository }}/commits/v${{ steps.version.outputs.version }}\n" > RELEASE_NOTES.md
+          else
+            printf "%s\n\n**Full Changelog**: https://github.com/${{ github.repository }}/commits/v${{ steps.version.outputs.version }}\n" "$NOTES_INPUT" > RELEASE_NOTES.md
+          fi
+
+          echo "---- (Dry Run) Release Notes Preview ----"
+          cat RELEASE_NOTES.md
+          echo "----------------------------------------"
+
+      - name: Dry run summary
+        if: ${{ github.event.inputs.dry_run == 'true' }}
+        run: |
+          echo "Dry run mode enabled."
+          echo "Calculated new version: v${{ steps.version.outputs.version }}"
+          echo "Build completed. Skipped commit, tag creation, push, npm publish, and GitHub release."
