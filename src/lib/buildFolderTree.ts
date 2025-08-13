@@ -1,6 +1,3 @@
-import type { BasePayload } from "payload";
-import type { PayloadFolderTreeViewConfig } from "src/index.js";
-
 export type DocType = {
   _id: string;
   createdAt: string;
@@ -27,9 +24,9 @@ export type TreeNode = {
   updatedAt: string;
 };
 
-export async function buildFolderTree({ allDocs, payload, serverProps }: {
-  allDocs: Folder[], payload: BasePayload, serverProps: PayloadFolderTreeViewConfig
-}): Promise<TreeNode[]> {
+export function buildFolderTree({ allDocs }: {
+  allDocs: Folder[]
+}) {
   const byId = new Map<string, Folder>();
   for (const f of allDocs) { byId.set(f.id, f); }
 
@@ -95,29 +92,6 @@ export async function buildFolderTree({ allDocs, payload, serverProps }: {
 
     const parentId = getParentId(f.folder);
     if (parentId) { hasParent.add(f.id); }
-  }
-
-  // Fetch titles with caching
-  const titleCache = new Map<string, string | undefined>();
-  await Promise.all(
-    Array.from(refMap.values()).map(async ({ id, collection }) => {
-      const key = makeKey(collection, id);
-      const useAsTitle = serverProps.collections?.find(c => c.slug === collection)?.useAsTitle;
-      const doc = await payload.findByID({ id, collection, depth: 0 });
-
-      const title = useAsTitle ? doc[useAsTitle] : undefined;
-      titleCache.set(key, title);
-    })
-  );
-
-  // Attach titles to documents in each node
-  for (const node of nodes.values()) {
-    node.documents = node.documents.map(d => {
-      const docId = getValueId(d.value);
-      const key = docId ? makeKey(d.relationTo, docId) : '';
-      const title = docId ? titleCache.get(key) : undefined;
-      return { ...d, title };
-    });
   }
 
   let rootIds: string[] = [];

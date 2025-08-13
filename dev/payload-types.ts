@@ -127,6 +127,7 @@ export interface UserAuthOperations {
  */
 export interface Post {
   id: string;
+  title: string;
   folder?: (string | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -269,6 +270,7 @@ export interface PayloadMigration {
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
+  title?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;

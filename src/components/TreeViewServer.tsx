@@ -11,12 +11,8 @@ export const TreeViewServer = async (props: PayloadFolderTreeViewConfig & Server
     collection: 'payload-folders',
   })
 
-  const treeData = await buildFolderTree({
+  const treeData = buildFolderTree({
     allDocs: folders.docs as Folder[],
-    payload: props.payload,
-    serverProps: {
-      collections: props.collections || []
-    }
   })
 
   return <TreeViewClient data={treeData} />
