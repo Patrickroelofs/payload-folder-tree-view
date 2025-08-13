@@ -6,9 +6,9 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/exports/index.ts",
-      "types": "./dist/exports/index.ts",
-      "default": "./dist/exports/index.ts"
+      "import": "./dist/index.ts",
+      "types": "./dist/index.ts",
+      "default": "./dist/index.ts"
     },
     "./client": {
       "import": "./dist/exports/client.ts",
@@ -21,8 +21,8 @@
       "default": "./dist/exports/rsc.ts"
     }
   },
-  "main": "./dist/exports/index.ts",
-  "types": "./dist/exports/index.ts",
+  "main": "./dist/index.ts",
+  "types": "./dist/index.ts",
   "files": [
     "dist"
   ],
@@ -98,9 +98,9 @@
   "publishConfig": {
     "exports": {
       ".": {
-        "import": "./dist/exports/index.js",
-        "types": "./dist/exports/index.d.ts",
-        "default": "./dist/exports/index.js"
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
       "./client": {
         "import": "./dist/exports/client.js",
@@ -113,8 +113,8 @@
         "default": "./dist/exports/rsc.js"
       }
     },
-    "main": "./dist/exports/index.js",
-    "types": "./dist/exports/index.d.ts"
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
