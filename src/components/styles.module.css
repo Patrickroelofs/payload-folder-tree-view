@@ -1,3 +1,7 @@
 .treeView {
   width: 100%;
 }
+
+.treeItem {
+  list-style: none;
+}

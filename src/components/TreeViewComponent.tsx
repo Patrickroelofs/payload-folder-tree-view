@@ -11,7 +11,7 @@ interface TreeViewClientProps {
 
 const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data }) => {
   const getDocumentLabel = (id: string) => id;
-  const getFolderLabel = (id: string) => id;
+  const getFolderLabel = (id: string) => data.items[id]?.title || id;
 
   const renderDocuments = (documents: Document[], depth: number) => {
     if (!documents.length) {

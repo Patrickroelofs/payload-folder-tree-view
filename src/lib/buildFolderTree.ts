@@ -1,84 +1,92 @@
-import type { JsonObject, TypeWithID } from "payload";
-
 export type Document = {
   id: string;
 }
 
 export type Folder = {
   id: string;
-  title?: string;
 }
 
 export type FlatTree = {
   items: Record<string, {
     documents?: Document[];
-    folders?: Folder[]
+    folders?: Folder[];
+    title?: string;
   }>;
   rootIds: string[];
 };
-
-interface FolderEntry {
+export type FolderEntry = {
   _id?: string;
   documentsAndFolders?: { docs?: FolderEntry[] };
+  folderType: string[];
   id?: string;
   name?: string;
   relationTo?: string;
-  value?: unknown;
-}
-
-const getId = (val: unknown): string => {
-  if (!val) { return ''; }
-  if (typeof val === 'string') { return val; }
-  const obj = val as Record<string, unknown>;
-  const valueObj = (typeof obj.value === 'object' && obj.value !== null)
-    ? (obj.value as Record<string, unknown>)
-    : undefined;
-  if (typeof obj.id === 'string') { return obj.id; }
-  if (typeof obj._id === 'string') { return obj._id; }
-  if (valueObj && typeof valueObj.id === 'string') { return valueObj.id; }
-  if (typeof obj.value === 'string') { return obj.value; }
-  return '';
+  value: {
+    [key: string]: unknown;
+    _id: string;
+    id: string;
+    name: string;
+  };
 };
 
-export function buildSimpleFolderTree(docs: (JsonObject | TypeWithID)[]): FlatTree {
+const getId = (val: FolderEntry | FolderEntry['value']): string => {
+  return val.id || val._id || '';
+};
+
+export function buildSimpleFolderTree(docs: FolderEntry[]): FlatTree {
   const items: FlatTree["items"] = {};
-  const rootIdSet = new Set<string>();
-  const childFolderSet = new Set<string>();
+  const nonRootIds = new Set<string>();
   const visiting = new Set<string>();
   const processed = new Set<string>();
+  const cycles: string[] = [];
 
-  const ensureNode = (id: string) => {
-    if (!items[id]) { items[id] = {}; }
+  const ensureNode = (id: string, src?: FolderEntry) => {
+    const node = (items[id] ??= {});
+    if (!node.title && src) {
+      node.title = src.name || src.value?.name;
+    }
+    return node;
   };
 
-  const processNode = (node: unknown): string => {
-    const anyNode = node as FolderEntry;
-    const id = getId(anyNode);
-    if (!id) { return ''; }
+  const processNode = (node: FolderEntry): string => {
+    const id = getId(node);
+    if (!id) {
+      return '';
+    }
 
-    if (visiting.has(id)) { return id; }
+    if (visiting.has(id)) {
+      cycles.push(id);
+      return id;
+    }
+    if (processed.has(id)) {
+      return id;
+    }
 
-    ensureNode(id);
-
-    if (processed.has(id)) { return id; }
+    ensureNode(id, node);
     visiting.add(id);
 
-    const entries = anyNode?.documentsAndFolders?.docs ?? [];
+    const entries = Array.isArray(node.documentsAndFolders?.docs)
+      ? node.documentsAndFolders.docs
+      : [];
+
     for (const entry of entries) {
       if (!entry) { continue; }
+
       if (entry.relationTo === 'payload-folders') {
-        const folderId = processNode(entry.value ?? entry);
-        if (folderId) {
-          childFolderSet.add(folderId);
-          const foldersArr = (items[id].folders ??= []);
+        const folderId = processNode(entry);
+        if (folderId && folderId !== id) {
+          nonRootIds.add(folderId);
+          const parent = ensureNode(id);
+          const foldersArr = (parent.folders ??= []);
           if (!foldersArr.some(f => f.id === folderId)) {
-            foldersArr.push({ id: folderId, title: entry.name });
+            foldersArr.push({ id: folderId });
           }
         }
       } else {
         const docId = getId(entry.value ?? entry);
         if (docId) {
-          const docsArr = (items[id].documents ??= []);
+          const parent = ensureNode(id);
+          const docsArr = (parent.documents ??= []);
           if (!docsArr.some(d => d.id === docId)) {
             docsArr.push({ id: docId });
           }
@@ -91,12 +99,14 @@ export function buildSimpleFolderTree(docs: (JsonObject | TypeWithID)[]): FlatTr
     return id;
   };
 
-  for (const doc of docs) {
-    const rootId = processNode(doc);
-    if (rootId) { rootIdSet.add(rootId); }
+  for (const rootCandidate of docs) {
+    const rootId = processNode(rootCandidate);
+    if (rootId) {
+      ensureNode(rootId, rootCandidate);
+    }
   }
 
-  const rootIds = Array.from(rootIdSet).filter(id => !childFolderSet.has(id));
+  const rootIds = Object.keys(items).filter(id => !nonRootIds.has(id));
 
   return { items, rootIds };
 }
