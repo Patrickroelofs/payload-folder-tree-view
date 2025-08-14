@@ -39,7 +39,7 @@ Please see the [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## Need Help?
 
-If you have questions or need support, open an issue on [GitHub](https://github.com/payloadcms/payload-folders-tree-view/issues), or find me on the Payload [discord](https://discord.com/invite/r6sCXqVk3v).
+If you have questions or need support, open an issue on [GitHub](https://github.com/payloadcms/payload-folder-tree-view/issues), or find me on the Payload [discord](https://discord.com/invite/r6sCXqVk3v).
 
 ## Contributors
-<img align="left" src="https://contributors-img.web.app/image?repo=patrickroelofs/payload-folders-tree-view"/>
+<img align="left" src="https://contributors-img.web.app/image?repo=patrickroelofs/payload-folder-tree-view"/>
