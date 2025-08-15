@@ -69,7 +69,7 @@ const buildConfigWithMemoryDB = async () => {
     },
     plugins: [
       payloadFolderTreeView({
-        showFiles: false,
+        showFiles: true,
       })
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',

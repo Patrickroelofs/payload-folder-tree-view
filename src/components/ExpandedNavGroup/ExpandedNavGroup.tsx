@@ -17,6 +17,7 @@ const ftvClass = 'folder-tree-view'
 
 type Props = {
   children: React.ReactNode
+  folderCount: number;
   folderId: string;
   isOpen?: boolean
   label: string
@@ -30,7 +31,7 @@ const preferencesKey = 'payload-folder-tree-view'
  *
  * Extends payloadcms/ui base "NavGroup" component for folder tree view.
  */
-export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: isOpenFromProps, label, pluginConfig }) => {
+export const ExpandedNavGroup: React.FC<Props> = ({ children, folderCount, folderId, isOpen: isOpenFromProps, label, pluginConfig }) => {
   const [collapsed, setCollapsed] = useState(
     typeof isOpenFromProps !== 'undefined' ? !isOpenFromProps : false,
   )
@@ -43,10 +44,6 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
 
   if (label) {
     const toggleCollapsed = async () => {
-      if (!React.isValidElement(children)) {
-        return;
-      }
-
       setAnimate(true)
       const newGroupPrefs: NavPreferences['groups'] = {}
 
@@ -93,15 +90,12 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
           type="button"
         >
           <Link className={`${baseClass}__label`} href={`/admin/browse-by-folder/${folderId === "root" ? '' : folderId}`} onClick={linkPressed}>{label}</Link>
-          {React.isValidElement(children) && (
-            <div className={`${baseClass}__indicator`}>
-              <ChevronIcon
-                className={`${baseClass}__indicator`}
-                direction={!collapsed ? 'up' : undefined}
-              />
-            </div>
-          )}
-
+          <div className={`${baseClass}__indicator`}>
+            <ChevronIcon
+              className={`${baseClass}__indicator`}
+              direction={!collapsed ? 'up' : undefined}
+            />
+          </div>
         </button>
         <AnimateHeight duration={animate ? 300 : 0} height={collapsed ? 0 : 'auto'}>
           <div className={`${baseClass}__content`}>
