@@ -1,40 +1,16 @@
-import type { Document, FlatTree } from 'src/lib/buildFolderTree.js';
+import type { FlatTree } from 'src/lib/buildFolderTree.js';
 
-import { Link, NavGroup } from '@payloadcms/ui';
 import React from 'react';
 
-import styles from "./styles.module.css";
+import { ExpandedNavGroup } from './ExpandedNavGroup/ExpandedNavGroup.js';
+import "./styles.scss";
 
 interface TreeViewClientProps {
   data: FlatTree;
 }
 
 const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data }) => {
-  const getDocumentLabel = (id: string) => id;
   const getFolderLabel = (id: string) => data.items[id]?.title || id;
-
-  const renderDocuments = (documents: Document[], depth: number) => {
-    if (!documents.length) {
-      return <span className={styles.emptyState}>No documents found...</span>;
-    }
-
-    return (
-      <ul className={styles.documentList} data-depth={depth}>
-        {documents.map(doc => (
-          <li className={styles.treeItem} data-type="document" key={doc.id}>
-            <Link
-              href="#"
-              title={getDocumentLabel(doc.id)}
-            >
-              <span className={styles.itemName}>
-                {getDocumentLabel(doc.id)}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    );
-  };
 
   const renderFolders = (folderIds: string[], depth = 0): React.ReactNode => {
     if (!folderIds.length) { return null; }
@@ -48,22 +24,18 @@ const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data }) => {
           const childFolderIds =
             (folderNode.folders || []).map(f => (typeof f === 'string' ? f : f.id));
 
-          const documents = folderNode.documents || [];
           const hasFolders = childFolderIds.length > 0;
-          const hasDocuments = documents.length > 0;
 
           return (
-            <NavGroup
+            <ExpandedNavGroup
               data-depth={depth}
+              folderId={folderId}
               isOpen={false}
               key={folderId}
               label={getFolderLabel(folderId)}
             >
               {hasFolders && renderFolders(childFolderIds, depth + 1)}
-              {hasDocuments
-                ? renderDocuments(documents, depth + 1)
-                : !hasFolders && <span className={styles.emptyState}>Empty folder...</span>}
-            </NavGroup>
+            </ExpandedNavGroup>
           );
         })}
       </ul>
@@ -71,14 +43,14 @@ const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data }) => {
   };
 
   return (
-    <div className={styles.treeView}>
-      <NavGroup isOpen={false} label="Folders">
+    <div className="tree-view-component">
+      <ExpandedNavGroup folderId="root" isOpen={false} label="Folders">
         {data.rootIds.length === 0 ? (
-          <span className={styles.emptyState}>No folders found...</span>
+          <span className="empty-state">No folders found...</span>
         ) : (
           renderFolders(data.rootIds, 0)
         )}
-      </NavGroup>
+      </ExpandedNavGroup>
     </div>
   );
 };

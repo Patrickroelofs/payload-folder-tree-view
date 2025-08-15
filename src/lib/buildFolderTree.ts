@@ -8,7 +8,6 @@ export type Folder = {
 
 export type FlatTree = {
   items: Record<string, {
-    documents?: Document[];
     folders?: Folder[];
     title?: string;
   }>;
@@ -80,15 +79,6 @@ export function buildSimpleFolderTree(docs: FolderEntry[]): FlatTree {
           const foldersArr = (parent.folders ??= []);
           if (!foldersArr.some(f => f.id === folderId)) {
             foldersArr.push({ id: folderId });
-          }
-        }
-      } else {
-        const docId = getId(entry.value ?? entry);
-        if (docId) {
-          const parent = ensureNode(id);
-          const docsArr = (parent.documents ??= []);
-          if (!docsArr.some(d => d.id === docId)) {
-            docsArr.push({ id: docId });
           }
         }
       }
