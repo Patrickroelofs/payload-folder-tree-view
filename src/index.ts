@@ -16,7 +16,7 @@ export type PayloadFolderTreeViewConfig = {
    *
    * @default true
    */
-  showFiles?: boolean
+  showFiles: boolean
 }
 
 export const payloadFolderTreeView =
@@ -36,6 +36,8 @@ export const payloadFolderTreeView =
         configEndpoints.push(
           pluginEndpoints.openFolder,
         )
+      } else {
+        pluginOptions.showFiles = false;
       }
 
       return {
@@ -47,6 +49,9 @@ export const payloadFolderTreeView =
             beforeNavLinks: [
               {
                 path: 'payload-folder-tree-view/rsc#TreeViewServer',
+                serverProps: {
+                  showFiles: pluginOptions.showFiles,
+                }
               }
             ]
           }

@@ -1,15 +1,17 @@
+import type { PayloadFolderTreeViewConfig } from 'src/index.js';
 import type { FlatTree } from 'src/lib/buildFolderTree.js';
 
 import React from 'react';
 
-import { ExpandedNavGroup } from './ExpandedNavGroup/ExpandedNavGroup.js';
 import "./styles.scss";
+import { ExpandedNavGroup } from './ExpandedNavGroup/ExpandedNavGroup.js';
 
 interface TreeViewClientProps {
   data: FlatTree;
+  pluginConfig: PayloadFolderTreeViewConfig
 }
 
-const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data }) => {
+const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data, pluginConfig }) => {
   const getFolderLabel = (id: string) => data.items[id]?.title || id;
 
   const renderFolders = (folderIds: string[], depth = 0): React.ReactNode => {
@@ -29,10 +31,12 @@ const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data }) => {
           return (
             <ExpandedNavGroup
               data-depth={depth}
+              folderCount={childFolderIds.length}
               folderId={folderId}
               isOpen={false}
               key={folderId}
               label={getFolderLabel(folderId)}
+              pluginConfig={pluginConfig}
             >
               {hasFolders && renderFolders(childFolderIds, depth + 1)}
             </ExpandedNavGroup>
@@ -44,7 +48,7 @@ const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data }) => {
 
   return (
     <div className="tree-view-component">
-      <ExpandedNavGroup folderId="root" isOpen={false} label="Folders">
+      <ExpandedNavGroup folderCount={data.rootIds.length} folderId="root" isOpen={false} label="Folders" pluginConfig={pluginConfig}>
         {data.rootIds.length === 0 ? (
           <span className="empty-state">No folders found...</span>
         ) : (

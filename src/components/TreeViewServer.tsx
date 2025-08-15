@@ -21,5 +21,10 @@ export const TreeViewServer = async (props: PayloadFolderTreeViewConfig & Server
 
   const treeData = buildSimpleFolderTree(folderEntries);
 
-  return <TreeViewComponent data={treeData} />
+  return <TreeViewComponent
+    data={treeData}
+    pluginConfig={{
+      showFiles: props.showFiles
+    }}
+  />
 }

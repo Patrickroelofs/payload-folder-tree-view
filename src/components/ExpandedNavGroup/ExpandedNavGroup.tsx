@@ -1,10 +1,12 @@
 'use client'
 import type { NavPreferences } from 'payload'
+import type { PayloadFolderTreeViewConfig } from 'src/index.js'
 
 import { AnimateHeight, ChevronIcon, Link, useNav, usePreferences } from '@payloadcms/ui'
-import React, { useState } from 'react'
 
 import './styles.scss'
+
+import React, { useState } from 'react'
 
 import type { File } from "../../types.js"
 
@@ -15,20 +17,21 @@ const ftvClass = 'folder-tree-view'
 
 type Props = {
   children: React.ReactNode
+  folderCount: number;
   folderId: string;
   isOpen?: boolean
   label: string
+  pluginConfig: PayloadFolderTreeViewConfig
 }
 
-
-const preferencesKey = 'nav'
+const preferencesKey = 'payload-folder-tree-view'
 
 /**
  * Expanded navigation group component.
  *
  * Extends payloadcms/ui base "NavGroup" component for folder tree view.
  */
-export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: isOpenFromProps, label }) => {
+export const ExpandedNavGroup: React.FC<Props> = ({ children, folderCount, folderId, isOpen: isOpenFromProps, label, pluginConfig }) => {
   const [collapsed, setCollapsed] = useState(
     typeof isOpenFromProps !== 'undefined' ? !isOpenFromProps : false,
   )
@@ -53,7 +56,7 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
       void setPreference(preferencesKey, { groups: newGroupPrefs }, true)
       setCollapsed(!collapsed)
 
-      if (folderId !== "root" && collapsed) {
+      if (folderId !== "root" && collapsed && pluginConfig.showFiles) {
         setLoading(true);
         const files = await fetchFilesFromEndpoint(folderId)
         setFiles(files);
@@ -113,7 +116,6 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
                 })}
               </ul>
             )}
-
           </div>
         </AnimateHeight>
       </div>
