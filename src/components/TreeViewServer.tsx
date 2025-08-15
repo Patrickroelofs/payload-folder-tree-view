@@ -9,6 +9,7 @@ import TreeViewComponent from "./TreeViewComponent.js";
 export const TreeViewServer = async (props: PayloadFolderTreeViewConfig & ServerComponentProps) => {
   const folders = await props.payload.find({
     collection: 'payload-folders',
+    limit: 0,
   });
 
   const folderEntries: FolderEntry[] = folders.docs.map((doc: JsonObject & TypeWithID) => ({
