@@ -1,12 +1,11 @@
 import type { Config } from 'payload'
 
-export type PayloadFolderTreeViewCollections = {
-  slug: string;
-  useAsTitle: string;
-}
-
 export type PayloadFolderTreeViewConfig = {
-  collections?: PayloadFolderTreeViewCollections[]
+  /**
+   * Whether the folder tree view plugin is enabled.
+   * 
+   * @default false
+   */
   disabled?: boolean
 }
 
@@ -26,9 +25,6 @@ export const PayloadFolderTreeView =
             beforeNavLinks: [
               {
                 path: 'payload-folder-tree-view/rsc#TreeViewServer',
-                serverProps: {
-                  collections: pluginOptions.collections,
-                }
               }
             ]
           }

@@ -1,7 +1,3 @@
-export type Document = {
-  id: string;
-}
-
 export type Folder = {
   id: string;
 }
@@ -13,6 +9,7 @@ export type FlatTree = {
   }>;
   rootIds: string[];
 };
+
 export type FolderEntry = {
   _id?: string;
   documentsAndFolders?: { docs?: FolderEntry[] };
