@@ -6,7 +6,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
-import { PayloadFolderTreeView } from '../src/index.js'
+import { payloadFolderTreeView } from '../src/index.js'
 import { testEmailAdapter } from './helpers/testEmailAdapter.js'
 import { seed } from './seed.js'
 
@@ -68,18 +68,7 @@ const buildConfigWithMemoryDB = async () => {
       await seed(payload)
     },
     plugins: [
-      PayloadFolderTreeView({
-        collections: [
-          {
-            slug: 'posts',
-            useAsTitle: 'title',
-          },
-          {
-            slug: 'media',
-            useAsTitle: 'filename',
-          }
-        ]
-      })
+      payloadFolderTreeView({})
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     sharp,

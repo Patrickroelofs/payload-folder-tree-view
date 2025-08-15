@@ -45,6 +45,22 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
 
       void setPreference(preferencesKey, { groups: newGroupPrefs }, true)
       setCollapsed(!collapsed)
+
+      // TODO: Fetch folder contents using plugin API functionality
+      // try {
+      //   const res = await fetch(`/api/${folderId}/folder-tree-view/open-folder`, {
+      //     method: 'GET',
+      //   }).then((response) => {
+      //     if (!response.ok) {
+      //       throw new Error('Network response was not ok')
+      //     }
+      //     return response.json()
+      //   }).then((data) => {
+      //     console.log('Fetched folder contents:', data)
+      //   })
+      // } catch (err) {
+      //   console.error('Error fetching folder contents:', err)
+      // }
     }
 
     const linkPressed = (e: React.MouseEvent<HTMLAnchorElement>) => {

@@ -60,6 +60,7 @@
     "@swc-node/register": "1.10.9",
     "@swc/cli": "0.6.0",
     "@tailwindcss/postcss": "^4.1.11",
+    "@tanstack/eslint-plugin-query": "^5.83.1",
     "@types/node": "^22.5.4",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
@@ -124,5 +125,8 @@
       "unrs-resolver"
     ]
   },
-  "registry": "https://registry.npmjs.org/"
+  "registry": "https://registry.npmjs.org/",
+  "dependencies": {
+    "@tanstack/react-query": "^5.85.3"
+  }
 }
