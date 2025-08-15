@@ -5,6 +5,7 @@ import { AnimateHeight, ChevronIcon, Link, useNav, usePreferences } from '@paylo
 import React, { useState } from 'react'
 
 import './styles.scss'
+import { fetchFilesFromEndpoint } from '../../lib/fetchFilesFromEndpoint.js'
 
 const baseClass = 'nav-group'
 const ftvClass = 'folder-tree-view'
@@ -14,6 +15,12 @@ type Props = {
   folderId: string;
   isOpen?: boolean
   label: string
+}
+
+type File = {
+  id: string;
+  relationTo: string;
+  title: string;
 }
 
 const preferencesKey = 'nav'
@@ -29,11 +36,12 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
   )
 
   const [animate, setAnimate] = useState(false)
+  const [files, setFiles] = useState<File[]>([])
   const { setPreference } = usePreferences()
   const { navOpen } = useNav()
 
   if (label) {
-    const toggleCollapsed = () => {
+    const toggleCollapsed = async () => {
       setAnimate(true)
       const newGroupPrefs: NavPreferences['groups'] = {}
 
@@ -45,6 +53,13 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
 
       void setPreference(preferencesKey, { groups: newGroupPrefs }, true)
       setCollapsed(!collapsed)
+
+      if (folderId !== "root" && collapsed) {
+        const files = await fetchFilesFromEndpoint(folderId)
+        setFiles(files);
+      } else {
+        setFiles([]);
+      }
     }
 
     const linkPressed = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -78,8 +93,21 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
             />
           </div>
         </button>
-        <AnimateHeight duration={animate ? 200 : 0} height={collapsed ? 0 : 'auto'}>
-          <div className={`${baseClass}__content`}>{children}</div>
+        <AnimateHeight height={collapsed ? 0 : 'auto'}>
+          <div className={`${baseClass}__content`}>
+            {children}
+            <ul className={`${baseClass}__files`}>
+              {files.map((file) => {
+                return (
+                  <li key={file.id}>
+                    <Link className={`${baseClass}__file`} href={`/admin/collections/${file.relationTo}/${file.id}`}>
+                      {file.title}
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         </AnimateHeight>
       </div>
     )

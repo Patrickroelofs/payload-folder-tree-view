@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@tanstack/react-query':
+        specifier: ^5.85.3
+        version: 5.85.3(react@19.1.0)
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.2.0
@@ -50,6 +54,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4.1.11
         version: 4.1.11
+      '@tanstack/eslint-plugin-query':
+        specifier: ^5.83.1
+        version: 5.83.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.7.3)
       '@types/node':
         specifier: ^22.5.4
         version: 22.17.1
@@ -2009,6 +2016,19 @@ packages:
 
   '@tailwindcss/postcss@4.1.11':
     resolution: {integrity: sha512-q/EAIIpF6WpLhKEuQSEVMZNMIY8KhWoAemZ9eylNAih9jxMGAYPPWBn3I9QL/2jZ+e7OEz/tZkX5HwbBR4HohA==}
+
+  '@tanstack/eslint-plugin-query@5.83.1':
+    resolution: {integrity: sha512-tdkpPFfzkTksN9BIlT/qjixSAtKrsW6PUVRwdKWaOcag7DrD1vpki3UzzdfMQGDRGeg1Ue1Dg+rcl5FJGembNg==}
+    peerDependencies:
+      eslint: ^8.57.0 || ^9.0.0
+
+  '@tanstack/query-core@5.85.3':
+    resolution: {integrity: sha512-9Ne4USX83nHmRuEYs78LW+3lFEEO2hBDHu7mrdIgAFx5Zcrs7ker3n/i8p4kf6OgKExmaDN5oR0efRD7i2J0DQ==}
+
+  '@tanstack/react-query@5.85.3':
+    resolution: {integrity: sha512-AqU8TvNh5GVIE8I+TUU0noryBRy7gOY0XhSayVXmOPll4UkZeLWKDwi0rtWOZbwLRCbyxorfJ5DIjDqE7GXpcQ==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@tokenizer/inflate@0.2.7':
     resolution: {integrity: sha512-MADQgmZT1eKjp06jpI2yozxaU9uVs4GzzgSL+uEq7bVcJ9V1ZXQkeGNql1fsSI0gMy1vhvNTNbUqrx+pZfJVmg==}
@@ -7463,6 +7483,21 @@ snapshots:
       '@tailwindcss/oxide': 4.1.11
       postcss: 8.5.6
       tailwindcss: 4.1.11
+
+  '@tanstack/eslint-plugin-query@5.83.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.7.3)':
+    dependencies:
+      '@typescript-eslint/utils': 8.39.0(eslint@9.33.0(jiti@2.5.1))(typescript@5.7.3)
+      eslint: 9.33.0(jiti@2.5.1)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
+  '@tanstack/query-core@5.85.3': {}
+
+  '@tanstack/react-query@5.85.3(react@19.1.0)':
+    dependencies:
+      '@tanstack/query-core': 5.85.3
+      react: 19.1.0
 
   '@tokenizer/inflate@0.2.7':
     dependencies:
