@@ -9,7 +9,7 @@ export type PayloadFolderTreeViewConfig = {
   disabled?: boolean
 }
 
-export const PayloadFolderTreeView =
+export const payloadFolderTreeView =
   (pluginOptions: PayloadFolderTreeViewConfig) =>
     (config: Config): Config => {
       if (pluginOptions.disabled) {
