@@ -90,6 +90,7 @@ export const payloadFolderTreeView =
 
                 mappedFilesFromIds.push({
                   ...rest,
+                  relationTo: file.relationTo,
                 });
               }
 
