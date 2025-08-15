@@ -93,18 +93,20 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
             />
           </div>
         </button>
-        <AnimateHeight duration={animate ? 200 : 0} height={collapsed ? 0 : 'auto'}>
+        <AnimateHeight height={collapsed ? 0 : 'auto'}>
           <div className={`${baseClass}__content`}>
             {children}
-            <div className={`${baseClass}__files`}>
+            <ul className={`${baseClass}__files`}>
               {files.map((file) => {
                 return (
-                  <Link className={`${baseClass}__file`} href={`/admin/collections/${file.relationTo}/${file.id}`} key={file.id}>
-                    {file.title}
-                  </Link>
+                  <li key={file.id}>
+                    <Link className={`${baseClass}__file`} href={`/admin/collections/${file.relationTo}/${file.id}`}>
+                      {file.title}
+                    </Link>
+                  </li>
                 )
               })}
-            </div>
+            </ul>
           </div>
         </AnimateHeight>
       </div>
