@@ -5,6 +5,9 @@ import { AnimateHeight, ChevronIcon, Link, useNav, usePreferences } from '@paylo
 import React, { useState } from 'react'
 
 import './styles.scss'
+
+import type { File } from "../../types.js"
+
 import { fetchFilesFromEndpoint } from '../../lib/fetchFilesFromEndpoint.js'
 
 const baseClass = 'nav-group'
@@ -17,11 +20,6 @@ type Props = {
   label: string
 }
 
-type File = {
-  id: string;
-  relationTo: string;
-  title: string;
-}
 
 const preferencesKey = 'nav'
 
@@ -36,6 +34,7 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
   )
 
   const [animate, setAnimate] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const { setPreference } = usePreferences()
   const { navOpen } = useNav()
@@ -55,8 +54,10 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
       setCollapsed(!collapsed)
 
       if (folderId !== "root" && collapsed) {
+        setLoading(true);
         const files = await fetchFilesFromEndpoint(folderId)
         setFiles(files);
+        setLoading(false);
       } else {
         setFiles([]);
       }
@@ -93,20 +94,26 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderId, isOpen: 
             />
           </div>
         </button>
-        <AnimateHeight height={collapsed ? 0 : 'auto'}>
+        <AnimateHeight duration={animate ? 300 : 0} height={collapsed ? 0 : 'auto'}>
           <div className={`${baseClass}__content`}>
             {children}
-            <ul className={`${baseClass}__files`}>
-              {files.map((file) => {
-                return (
-                  <li key={file.id}>
-                    <Link className={`${baseClass}__file`} href={`/admin/collections/${file.relationTo}/${file.id}`}>
-                      {file.title}
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
+            {loading && (
+              <p>Loading...</p>
+            )}
+            {files && (
+              <ul className={`${baseClass}__files`}>
+                {files.map((file) => {
+                  return (
+                    <li key={file.id}>
+                      <Link className={`${baseClass}__file`} href={`/admin/collections/${file.relationTo}/${file.id}`}>
+                        {file.title}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+
           </div>
         </AnimateHeight>
       </div>

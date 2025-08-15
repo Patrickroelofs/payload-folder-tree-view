@@ -1,11 +1,14 @@
+import type { Config } from "payload";
 import type { PayloadFolderTreeViewConfig } from "src/index.js";
 import type { Endpoints } from "src/types.js";
 
 import { addDataAndFileToRequest } from "payload";
 
+import type { File } from "../types.js"
+
 import { getIdFromUrl } from "../../src/lib/getIdFromUrl.js";
 
-const endpoints: (pluginConfig: PayloadFolderTreeViewConfig) => Endpoints = (pluginConfig) => ({
+const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => Endpoints = (config, pluginConfig) => ({
   openFolder: {
     handler: async (req) => {
       await addDataAndFileToRequest(req);
@@ -47,7 +50,7 @@ const endpoints: (pluginConfig: PayloadFolderTreeViewConfig) => Endpoints = (plu
         });
       }
 
-      const mappedFilesFromIds = [];
+      const mappedFilesFromIds: File[] = [];
 
       for (const file of mappedFilesFromFolders) {
         const document = await req.payload.findByID({
@@ -59,11 +62,16 @@ const endpoints: (pluginConfig: PayloadFolderTreeViewConfig) => Endpoints = (plu
           continue;
         }
 
+        const useAsTitle = config?.collections?.find(
+          (col) => col.slug === file.relationTo
+        )?.admin?.useAsTitle;
+
         const { folder: _folder, ...rest } = document;
 
         mappedFilesFromIds.push({
-          ...rest,
+          id: String(document.id),
           relationTo: file.relationTo,
+          title: useAsTitle ? document[useAsTitle] : document.id,
         });
       }
 
