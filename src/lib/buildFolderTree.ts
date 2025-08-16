@@ -1,3 +1,5 @@
+import type { SanitizedConfig } from "payload";
+
 export type Folder = {
   id: string;
 }
@@ -29,7 +31,8 @@ const getId = (val: FolderEntry | FolderEntry['value']): string => {
   return val.id || val._id || '';
 };
 
-export function buildSimpleFolderTree(docs: FolderEntry[]): FlatTree {
+export function buildSimpleFolderTree(docs: FolderEntry[], config: SanitizedConfig): FlatTree {
+  const folderSlug = config.folders ? String(config.folders.slug) : 'payload-folders';
   const items: FlatTree["items"] = {};
   const nonRootIds = new Set<string>();
   const visiting = new Set<string>();
@@ -68,7 +71,7 @@ export function buildSimpleFolderTree(docs: FolderEntry[]): FlatTree {
     for (const entry of entries) {
       if (!entry) { continue; }
 
-      if (entry.relationTo === 'payload-folders') {
+      if (entry.relationTo === folderSlug) {
         const folderId = processNode(entry);
         if (folderId && folderId !== id) {
           nonRootIds.add(folderId);
