@@ -1,2 +1,27 @@
 .folder-tree-view {
+
+  .nav-group__files {
+    > li {
+      padding-bottom: 0.35em;
+
+      .icon {
+        margin-right: 0.15em;
+        color: var(--theme-elevation-400);
+      }
+
+      .nav-group__file {
+        color: var(--theme-elevation-400);
+      }
+
+      &:hover, &:focus {
+        .icon {
+          color: var(--theme-elevation-800);
+        }
+        
+        .nav-group__file {
+          color: var(--theme-elevation-800);
+        }
+      }
+    }
+  }
 }

@@ -3,5 +3,18 @@
 
   ul {
     padding-left: 1em;
+
+     li {
+      list-style: none;
+     }
+  }
+
+  .folder-icon-wrapper {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    .icon {
+      margin-right: 0.5em;
+    }
   }
 }

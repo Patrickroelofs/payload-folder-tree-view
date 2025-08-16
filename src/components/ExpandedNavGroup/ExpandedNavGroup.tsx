@@ -2,7 +2,7 @@
 import type { NavPreferences } from 'payload'
 import type { PayloadFolderTreeViewConfig } from 'src/index.js'
 
-import { AnimateHeight, ChevronIcon, Link, useNav, usePreferences } from '@payloadcms/ui'
+import { AnimateHeight, ChevronIcon, DocumentIcon, FolderIcon, Link, useNav, usePreferences } from '@payloadcms/ui'
 
 import './styles.scss'
 
@@ -89,7 +89,10 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderCount, folde
           tabIndex={!navOpen ? -1 : 0}
           type="button"
         >
-          <Link className={`${baseClass}__label`} href={`/admin/browse-by-folder/${folderId === "root" ? '' : folderId}`} onClick={linkPressed}>{label}</Link>
+          <div className='folder-icon-wrapper'>
+            <FolderIcon />
+            <Link className={`${baseClass}__label`} href={`/admin/browse-by-folder/${folderId === "root" ? '' : folderId}`} onClick={linkPressed}>{label}</Link>
+          </div>
           <div className={`${baseClass}__indicator`}>
             <ChevronIcon
               className={`${baseClass}__indicator`}
@@ -108,6 +111,7 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderCount, folde
                 {files.map((file) => {
                   return (
                     <li key={file.id}>
+                      <DocumentIcon />
                       <Link className={`${baseClass}__file`} href={`/admin/collections/${file.relationTo}/${file.id}`}>
                         {file.title}
                       </Link>
