@@ -17,11 +17,11 @@ pnpm add payload-folder-tree-view
 2) Add to your payload config
 
 ```ts
-import { PayloadFolderTreeView } from 'payload-folder-tree-view';
+import { payloadFolderTreeView } from 'payload-folder-tree-view';
 
 export default {
   plugins: [
-   PayloadFolderTreeView(),
+   payloadFolderTreeView(),
   ],
 };
 ```
