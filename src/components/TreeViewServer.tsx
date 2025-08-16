@@ -8,7 +8,7 @@ import TreeViewComponent from "./TreeViewComponent.js";
 
 export const TreeViewServer = async (props: PayloadFolderTreeViewConfig & ServerComponentProps) => {
   const folders = await props.payload.find({
-    collection: 'payload-folders',
+    collection: props.payload.config.folders ? props.payload.config.folders.slug : 'payload-folders',
     limit: 0,
   });
 
@@ -20,7 +20,7 @@ export const TreeViewServer = async (props: PayloadFolderTreeViewConfig & Server
     value: doc.value,
   }));
 
-  const treeData = buildSimpleFolderTree(folderEntries);
+  const treeData = buildSimpleFolderTree(folderEntries, props.payload.config);
 
   return <TreeViewComponent
     data={treeData}

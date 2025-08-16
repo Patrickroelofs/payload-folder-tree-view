@@ -13,6 +13,8 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
     handler: async (req) => {
       await addDataAndFileToRequest(req);
 
+      const folderSlug = config.folders ? String(config.folders.slug) : 'payload-folders';
+
       const folderId = getIdFromUrl(req.url ?? "");
 
       if (!folderId) {
@@ -21,7 +23,7 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
 
       const files = await req.payload.findByID({
         id: folderId,
-        collection: 'payload-folders',
+        collection: folderSlug,
       })
 
       if (!files) {
@@ -32,7 +34,7 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
       const mappedFilesFromFolders = [];
 
       for (const file of files.documentsAndFolders.docs) {
-        if (file.relationTo === "payload-folders") {
+        if (file.relationTo === folderSlug) {
           continue;
         }
         const { relationTo } = file;
