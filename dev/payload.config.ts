@@ -69,6 +69,7 @@ const buildConfigWithMemoryDB = async () => {
     },
     plugins: [
       payloadFolderTreeView({
+        disabled: false,
         showFiles: true,
       })
     ],

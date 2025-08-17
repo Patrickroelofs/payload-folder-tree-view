@@ -6,6 +6,8 @@ export type Folder = {
 
 export type FlatTree = {
   items: Record<string, {
+    fileCount: number;
+    folderCount: number;
     folders?: Folder[];
     title?: string;
   }>;
@@ -40,10 +42,21 @@ export function buildSimpleFolderTree(docs: FolderEntry[], config: SanitizedConf
   const cycles: string[] = [];
 
   const ensureNode = (id: string, src?: FolderEntry) => {
-    const node = (items[id] ??= {});
+    const node = (items[id] ??= {
+      fileCount: 0,
+      folderCount: 0,
+    });
+
     if (!node.title && src) {
       node.title = src.name || src.value?.name;
     }
+    if (!node.folderCount && src) {
+      node.folderCount = src.documentsAndFolders?.docs?.filter((doc) => doc.relationTo === folderSlug).length || 0;
+    }
+    if (!node.fileCount && src) {
+      node.fileCount = src.documentsAndFolders?.docs?.filter((doc) => doc.relationTo !== folderSlug).length || 0;
+    }
+
     return node;
   };
 
