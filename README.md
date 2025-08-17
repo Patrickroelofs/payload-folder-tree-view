@@ -1,5 +1,11 @@
 # ![Payload Folders Tree View](.github/assets/github-title.png)
 
+<p align="left">
+  <a href="https://www.npmjs.com/package/payload-folder-tree-view"><img alt="npm" src="https://img.shields.io/npm/dw/payload-folder-tree-view?style=flat-square" /></a>
+  &nbsp;
+  <a href="https://www.npmjs.com/package/payload-folder-tree-view"><img alt="npm" src="https://img.shields.io/npm/v/payload-folder-tree-view?style=flat-square" /></a>
+</p>
+
 ## Introduction
 
 Payload Folders Tree View is a plugin for Payload CMS that adds a collapsible folder tree to the Admin UI, making it easy to browse and find documents by folders across multiple collections. It leverages Payload’s built-in folders feature and injects a component into the admin navigation.
