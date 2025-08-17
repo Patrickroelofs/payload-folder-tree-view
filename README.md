@@ -13,7 +13,7 @@ Payload Folders Tree View is a plugin for Payload CMS that adds a collapsible fo
 https://github.com/user-attachments/assets/8e6ab8fb-acd6-48a6-afaa-839c3ca0bbf2
 
 ## Quick start
-This plugin is available on publicly on [npm](https://www.npmjs.com/package/payload-folder-tree-view).
+This plugin is available publicly on [npm](https://www.npmjs.com/package/payload-folder-tree-view).
 
 1) Install
 ```bash
