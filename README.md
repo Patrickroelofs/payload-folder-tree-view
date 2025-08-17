@@ -7,6 +7,8 @@ Payload Folders Tree View is a plugin for Payload CMS that adds a collapsible fo
 https://github.com/user-attachments/assets/8e6ab8fb-acd6-48a6-afaa-839c3ca0bbf2
 
 ## Quick start
+This plugin is available on publicly on [npm](https://www.npmjs.com/package/payload-folder-tree-view).
+
 1) Install
 ```bash
 pnpm add payload-folder-tree-view
@@ -19,7 +21,11 @@ import { payloadFolderTreeView } from 'payload-folder-tree-view';
 
 export default {
   plugins: [
-   payloadFolderTreeView(),
+   payloadFolderTreeView({
+     showFiles: true,
+
+     // Other options available
+   }),
   ],
 };
 ```
@@ -37,7 +43,10 @@ Please see the [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## Need Help?
 
-If you have questions or need support, open an issue on [GitHub](https://github.com/payloadcms/payload-folder-tree-view/issues), or find me on the Payload [discord](https://discord.com/invite/r6sCXqVk3v).
+If you have questions or need support, 
+- Open an issue on [GitHub](https://github.com/payloadcms/payload-folder-tree-view/issues)
+- Find me on the Payload [discord](https://discord.com/invite/r6sCXqVk3v)
+- Email me on [contact@patrickroelofs.com](mailto:contact@patrickroelofs.com).
 
 ## Contributors
 <img align="left" src="https://contributors-img.web.app/image?repo=patrickroelofs/payload-folder-tree-view"/>
