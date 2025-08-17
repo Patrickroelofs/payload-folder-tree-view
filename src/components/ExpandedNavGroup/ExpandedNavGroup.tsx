@@ -17,6 +17,7 @@ const ftvClass = 'folder-tree-view'
 
 type Props = {
   children: React.ReactNode
+  fileCount: number;
   folderCount: number;
   folderId: string;
   isOpen?: boolean
@@ -31,7 +32,7 @@ const preferencesKey = 'payload-folder-tree-view'
  *
  * Extends payloadcms/ui base "NavGroup" component for folder tree view.
  */
-export const ExpandedNavGroup: React.FC<Props> = ({ children, folderCount, folderId, isOpen: isOpenFromProps, label, pluginConfig }) => {
+export const ExpandedNavGroup: React.FC<Props> = ({ children, fileCount, folderCount, folderId, isOpen: isOpenFromProps, label, pluginConfig }) => {
   const [collapsed, setCollapsed] = useState(
     typeof isOpenFromProps !== 'undefined' ? !isOpenFromProps : false,
   )
@@ -85,7 +86,7 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderCount, folde
           ]
             .filter(Boolean)
             .join(' ')}
-          onClick={toggleCollapsed}
+          onClick={!!folderCount || !!fileCount ? toggleCollapsed : undefined}
           tabIndex={!navOpen ? -1 : 0}
           type="button"
         >
@@ -93,35 +94,39 @@ export const ExpandedNavGroup: React.FC<Props> = ({ children, folderCount, folde
             <FolderIcon />
             <Link className={`${baseClass}__label`} href={`/admin/browse-by-folder/${folderId === "root" ? '' : folderId}`} onClick={linkPressed}>{label}</Link>
           </div>
-          <div className={`${baseClass}__indicator`}>
-            <ChevronIcon
-              className={`${baseClass}__indicator`}
-              direction={!collapsed ? 'up' : undefined}
-            />
-          </div>
+          {!!folderCount || !!fileCount ? (
+            <div className={`${baseClass}__indicator`}>
+              <ChevronIcon
+                className={`${baseClass}__indicator`}
+                direction={!collapsed ? 'up' : undefined}
+              />
+            </div>
+          ) : null}
         </button>
-        <AnimateHeight duration={animate ? 300 : 0} height={collapsed ? 0 : 'auto'}>
-          <div className={`${baseClass}__content`}>
-            {children}
-            {loading && (
-              <p>Loading...</p>
-            )}
-            {files && (
-              <ul className={`${baseClass}__files`}>
-                {files.map((file) => {
-                  return (
-                    <li key={file.id}>
-                      <DocumentIcon />
-                      <Link className={`${baseClass}__file`} href={`/admin/collections/${file.relationTo}/${file.id}`}>
-                        {file.title}
-                      </Link>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </div>
-        </AnimateHeight>
+        {!!folderCount || !!fileCount ? (
+          <AnimateHeight duration={animate ? 300 : 0} height={collapsed ? 0 : 'auto'}>
+            <div className={`${baseClass}__content`}>
+              {children}
+              {loading && (
+                <p>Loading...</p>
+              )}
+              {files && (
+                <ul className={`${baseClass}__files`}>
+                  {files.map((file) => {
+                    return (
+                      <li key={file.id}>
+                        <DocumentIcon />
+                        <Link className={`${baseClass}__file`} href={`/admin/collections/${file.relationTo}/${file.id}`}>
+                          {file.title}
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </div>
+          </AnimateHeight>
+        ) : null}
       </div>
     )
   }

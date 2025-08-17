@@ -31,7 +31,8 @@ const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data, pluginConfig }
           return (
             <ExpandedNavGroup
               data-depth={depth}
-              folderCount={childFolderIds.length}
+              fileCount={folderNode.fileCount}
+              folderCount={folderNode.folderCount}
               folderId={folderId}
               isOpen={false}
               key={folderId}
@@ -48,7 +49,7 @@ const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data, pluginConfig }
 
   return (
     <div className="tree-view-component">
-      <ExpandedNavGroup folderCount={data.rootIds.length} folderId="root" isOpen={false} label="Folders" pluginConfig={pluginConfig}>
+      <ExpandedNavGroup fileCount={data.rootIds.length} folderCount={data.rootIds.length} folderId="root" isOpen={false} label="Folders" pluginConfig={pluginConfig}>
         {data.rootIds.length === 0 ? (
           <span className="empty-state">No folders found...</span>
         ) : (

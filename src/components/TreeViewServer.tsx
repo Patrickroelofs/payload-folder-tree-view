@@ -20,7 +20,7 @@ export const TreeViewServer = async (props: PayloadFolderTreeViewConfig & Server
     value: doc.value,
   }));
 
-  const treeData = buildSimpleFolderTree(folderEntries, props.payload.config);
+  const treeData = buildSimpleFolderTree(folderEntries, props);
 
   return <TreeViewComponent
     data={treeData}

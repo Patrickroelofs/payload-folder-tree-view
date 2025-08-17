@@ -59,10 +59,10 @@ export const seed = async (payload: Payload) => {
     ];
     const word1 = words[Math.floor(Math.random() * words.length)];
     const word2 = words[Math.floor(Math.random() * words.length)];
-    return `${word1} ${word2} Post`;
+    return `${word1} ${word2}`;
   }
 
-  const folderNames = Array.from({ length: 100 }, (_) => `Folder ${getRandomTitle()}`);
+  const folderNames = Array.from({ length: 15 }, (_) => `Folder ${getRandomTitle()}`);
   const createdFolders: any[] = [];
 
   for (const folderName of folderNames) {
@@ -77,7 +77,7 @@ export const seed = async (payload: Payload) => {
 
   const posts: any[] = [];
   for (const folder of createdFolders) {
-    const postCount = Math.floor(Math.random() * 15) + 1;
+    const postCount = Math.floor(Math.random() * 20) + 1;
     for (let i = 0; i < postCount; i++) {
       const post = await payload.create({
         collection: 'posts',
