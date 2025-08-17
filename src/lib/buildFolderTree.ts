@@ -1,4 +1,5 @@
-import type { SanitizedConfig } from "payload";
+import type { SanitizedConfig, ServerComponentProps } from "payload";
+import type { PayloadFolderTreeViewConfig } from "src/index.js";
 
 export type Folder = {
   id: string;
@@ -33,8 +34,8 @@ const getId = (val: FolderEntry | FolderEntry['value']): string => {
   return val.id || val._id || '';
 };
 
-export function buildSimpleFolderTree(docs: FolderEntry[], config: SanitizedConfig): FlatTree {
-  const folderSlug = config.folders ? String(config.folders.slug) : 'payload-folders';
+export function buildSimpleFolderTree(docs: FolderEntry[], config: PayloadFolderTreeViewConfig & ServerComponentProps): FlatTree {
+  const folderSlug = config.payload.config.folders ? String(config.payload.config.folders.slug) : 'payload-folders';
   const items: FlatTree["items"] = {};
   const nonRootIds = new Set<string>();
   const visiting = new Set<string>();
@@ -53,7 +54,7 @@ export function buildSimpleFolderTree(docs: FolderEntry[], config: SanitizedConf
     if (!node.folderCount && src) {
       node.folderCount = src.documentsAndFolders?.docs?.filter((doc) => doc.relationTo === folderSlug).length || 0;
     }
-    if (!node.fileCount && src) {
+    if (!node.fileCount && src && config.showFiles) {
       node.fileCount = src.documentsAndFolders?.docs?.filter((doc) => doc.relationTo !== folderSlug).length || 0;
     }
 
