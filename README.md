@@ -50,8 +50,8 @@ Please see the [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 ## Need Help?
 
 If you have questions or need support, 
-- Open an issue on [GitHub](https://github.com/payloadcms/payload-folder-tree-view/issues)
-- Find me on the Payload [discord](https://discord.com/invite/r6sCXqVk3v)
+- Open an issue on [GitHub](https://github.com/payloadcms/payload-folder-tree-view/issues).
+- Find me on the Payload [discord](https://discord.com/invite/r6sCXqVk3v).
 - Email me on [contact@patrickroelofs.com](mailto:contact@patrickroelofs.com).
 
 ## Contributors
