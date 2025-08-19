@@ -56,26 +56,20 @@
     "@payloadcms/translations": "3.52.0",
     "@payloadcms/ui": "3.52.0",
     "@playwright/test": "^1.52.0",
-    "@radix-ui/react-accordion": "^1.2.11",
     "@swc-node/register": "1.10.9",
     "@swc/cli": "0.6.0",
-    "@tailwindcss/postcss": "^4.1.11",
     "@types/node": "^22.5.4",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
     "copyfiles": "2.4.1",
     "cross-env": "^7.0.3",
     "eslint": "^9.23.0",
     "eslint-config-next": "15.4.4",
     "graphql": "^16.8.1",
-    "lucide-react": "^0.539.0",
     "mongodb-memory-server": "10.1.4",
     "next": "15.4.4",
     "open": "^10.1.0",
     "payload": "3.52.0",
-    "postcss": "^8.5.6",
     "prettier": "^3.4.2",
     "qs-esm": "7.0.2",
     "react": "19.1.0",
@@ -83,8 +77,6 @@
     "rimraf": "3.0.2",
     "sharp": "0.34.2",
     "sort-package-json": "^2.10.0",
-    "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.11",
     "typescript": "5.7.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.2"
@@ -124,8 +116,5 @@
       "unrs-resolver"
     ]
   },
-  "registry": "https://registry.npmjs.org/",
-  "dependencies": {
-    "@tanstack/react-query": "^5.85.3"
-  }
+  "registry": "https://registry.npmjs.org/"
 }
