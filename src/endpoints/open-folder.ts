@@ -75,7 +75,6 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
       return Response.json(
         folder.documentsAndFolders.docs
           .map((doc) => {
-            console.log(doc)
             return {
               id: doc._id,
               createdAt: doc.createdAt,
