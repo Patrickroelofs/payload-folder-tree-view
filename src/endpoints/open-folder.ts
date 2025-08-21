@@ -74,12 +74,20 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
 
       return Response.json(
         folder.documentsAndFolders.docs
-          .filter((doc) => doc.relationTo !== (config.folders ? config.folders.slug : 'payload-folders'))
           .map((doc) => {
+            console.log(doc)
             return {
               id: doc._id,
               createdAt: doc.createdAt,
-              title: doc.value.title,
+              data: doc.relationTo === (config.folders ? config.folders.slug : 'payload-folders') ? doc.value.documentsAndFolders.docs.map((doc) => {
+                return {
+                  id: doc._id,
+                  createdAt: doc.createdAt,
+                  title: doc.value.title,
+                  updatedAt: doc.updatedAt,
+                };
+              }) : undefined,
+              title: doc.relationTo === (config.folders ? config.folders.slug : 'payload-folders') ? doc.value.name : doc.value.title,
               updatedAt: doc.updatedAt,
             };
           })
