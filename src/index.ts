@@ -35,6 +35,7 @@ export const payloadFolderTreeView =
 
         configEndpoints.push(
           pluginEndpoints.openFolder,
+          pluginEndpoints.files,
         )
       } else {
         pluginOptions.showFiles = false;

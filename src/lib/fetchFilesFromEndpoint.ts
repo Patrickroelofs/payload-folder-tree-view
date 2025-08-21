@@ -1,6 +1,6 @@
-const fetchFilesFromEndpoint = async (folderId: string) => {
+const fetchFolders = async <T>(id: string): Promise<T> => {
   try {
-    const res = await fetch(`/api/${folderId}/folder-tree-view/open-folder`, {
+    const res = await fetch(`/api/${id}/folder-tree-view/folder`, {
       method: 'GET',
     }).then((response) => {
       if (!response.ok) {
@@ -11,8 +11,26 @@ const fetchFilesFromEndpoint = async (folderId: string) => {
 
     return res;
   } catch (err) {
-    console.error('Error fetching folder contents:', err)
+    throw new Error('Error fetching folders');
   }
 }
 
-export { fetchFilesFromEndpoint }
+const fetchItem = async <T>(itemId: string): Promise<T> => {
+  try {
+    const res = await fetch(`/api/${itemId}/folder-tree-view/item`, {
+      method: 'GET',
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      return response.json()
+    })
+
+    return res as T;
+  } catch (err) {
+    console.error('Error fetching item:', err)
+    throw new Error('Error fetching item');
+  }
+}
+
+export { fetchFolders, fetchItem }

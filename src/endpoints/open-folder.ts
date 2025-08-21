@@ -4,84 +4,90 @@ import type { Endpoints } from "src/types.js";
 
 import { addDataAndFileToRequest } from "payload";
 
-import type { File } from "../types.js"
-
 import { getIdFromUrl } from "../../src/lib/getIdFromUrl.js";
 
+
 const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => Endpoints = (config, pluginConfig) => ({
+  files: {
+    handler: async (req) => {
+      await addDataAndFileToRequest(req);
+
+      const folderId = getIdFromUrl(req.url ?? "");
+
+      const folders = await req.payload.find({
+        collection: config.folders ? config.folders.slug ? config.folders.slug : 'payload-folders' : 'payload-folders',
+        pagination: false,
+        where: {
+          id: {
+            equals: folderId
+          },
+        },
+      })
+
+      const folder = folders.docs[0];
+
+      return Response.json({
+        id: folder.id,
+        createdAt: folder.createdAt,
+        title: folder.name,
+        updatedAt: folder.updatedAt,
+      });
+    },
+    method: 'get',
+    path: '/:id/folder-tree-view/item',
+  },
   openFolder: {
     handler: async (req) => {
       await addDataAndFileToRequest(req);
 
-      const folderSlug = config.folders ? String(config.folders.slug) : 'payload-folders';
-
       const folderId = getIdFromUrl(req.url ?? "");
 
-      if (!folderId) {
-        return Response.json({ error: "Invalid folder ID" }, { status: 400 });
-      }
-
-      const files = await req.payload.findByID({
-        id: folderId,
-        collection: folderSlug,
+      const folders = await req.payload.find({
+        collection: config.folders ? config.folders.slug ? config.folders.slug : 'payload-folders' : 'payload-folders',
+        pagination: false,
+        where: folderId === "root"
+          ? { folder: { equals: false } }
+          : { id: { equals: folderId } },
       })
 
-      if (!files) {
-        return Response.json({ error: "Folder not found" }, { status: 404 });
+      if (folderId === "root") {
+        return Response.json(folders.docs.map((folder) => {
+          return {
+            id: folder.id,
+            createdAt: folder.createdAt,
+            data: folder.documentsAndFolders.docs.map((doc) => {
+              return {
+                id: folder.id,
+                createdAt: folder.createdAt,
+                title: doc.value.title,
+                updatedAt: folder.updatedAt,
+              };
+            }),
+            title: folder.name,
+            updatedAt: folder.updatedAt
+          };
+        }));
       }
 
 
-      const mappedFilesFromFolders = [];
+      const folder = folders.docs[0];
 
-      for (const file of files.documentsAndFolders.docs) {
-        if (file.relationTo === folderSlug) {
-          continue;
-        }
-        const { relationTo } = file;
-        const {
-          createdAt: _createdAt,
-          documentsAndFolders: _documentsAndFolders,
-          folder: _folder,
-          updatedAt: _updatedAt,
-          ...rest
-        } = file.value;
+      return Response.json(
+        folder.documentsAndFolders.docs
+          .filter((doc) => doc.relationTo !== (config.folders ? config.folders.slug : 'payload-folders'))
+          .map((doc) => {
+            return {
+              id: doc._id,
+              createdAt: doc.createdAt,
+              title: doc.value.title,
+              updatedAt: doc.updatedAt,
+            };
+          })
+      );
 
-        mappedFilesFromFolders.push({
-          ...rest,
-          relationTo,
-        });
-      }
-
-      const mappedFilesFromIds: File[] = [];
-
-      for (const file of mappedFilesFromFolders) {
-        const document = await req.payload.findByID({
-          id: file.id,
-          collection: file.relationTo,
-        })
-
-        if (!document) {
-          continue;
-        }
-
-        const useAsTitle = config?.collections?.find(
-          (col) => col.slug === file.relationTo
-        )?.admin?.useAsTitle;
-
-        const { folder: _folder, ...rest } = document;
-
-        mappedFilesFromIds.push({
-          id: String(document.id),
-          relationTo: file.relationTo,
-          title: useAsTitle ? document[useAsTitle] : document.id,
-        });
-      }
-
-
-      return Response.json(mappedFilesFromIds)
     },
     method: 'get',
-    path: '/:id/folder-tree-view/open-folder',
+    path: '/:id/folder-tree-view/folder',
   }
 }) satisfies Endpoints
 

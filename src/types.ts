@@ -1,6 +1,7 @@
 import type { Endpoint } from "payload";
 
 export interface Endpoints {
+  files: Omit<Endpoint, 'root'>;
   openFolder: Omit<Endpoint, 'root'>;
 }
 

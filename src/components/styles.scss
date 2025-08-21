@@ -1,20 +1,67 @@
-.tree-view-component {
+.tree {
   width: 100%;
-
-  ul {
-    padding-left: 1em;
-
-     li {
-      list-style: none;
-     }
-  }
-
-  .folder-icon-wrapper {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    .icon {
-      margin-right: 0.5em;
-    }
-  }
 }
+
+.tree button[role="treeitem"] {
+    display: flex;
+    background: transparent;
+    border: none;
+    width: 100%;
+    padding: 0 0 2px 0;
+}
+
+.treeitem {
+    width: 100%;
+    text-align: left;
+    background-color: white;
+    padding: 6px 10px;
+    position: relative;
+    border-radius: 8px;
+    transition: background-color .2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.treeitem:hover {
+    background-color: var(--selected-color);
+}
+
+.tree button[role="treeitem"]:focus {
+    outline: none;
+}
+
+.treeitem.selected {
+    background-color: #eee;
+}
+
+button:focus-visible .treeitem.focused, .treeitem.searchmatch.focused {
+    outline: 2px solid black;
+}
+
+.treeitem.drop {
+    border-color: var(--selected-color);
+    background-color: #e1f1f8;
+}
+
+.treeitem.searchmatch {
+    background-color: #e1f8ff;
+}
+
+.treeitem.folder:before {
+    flex-shrink: 0;
+    content: url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTYgMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj48Zz48Zz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTQuNjQ2IDEuNjQ2YS41LjUgMCAwIDEgLjcwOCAwbDYgNmEuNS41IDAgMCAxIDAgLjcwOGwtNiA2YS41LjUgMCAwIDEtLjcwOC0uNzA4TDEwLjI5MyA4IDQuNjQ2IDIuMzU0YS41LjUgMCAwIDEgMC0uNzA4eiIgY2xhc3M9InJjdC10cmVlLWl0ZW0tYXJyb3ctcGF0aCI+PC9wYXRoPjwvZz48L2c+PC9zdmc+);
+    width: 10px;
+    display: inline-block;
+    z-index: 1;
+    margin-right: 4px;
+    transition: transform 0.1s ease-in-out;
+}
+
+.treeitem.folder.expanded:before {
+    transform: rotate(90deg);
+}
+
+.treeitem:not(.folder) {
+    padding-left: 24px;
+}
+
