@@ -15,55 +15,34 @@ import cn from "classnames";
 import React from 'react';
 
 import { LoadingIcon } from "../../src/icons/Loading/index.js";
-import { fetchFolders, fetchItem, fetchRootFolders } from "../../src/lib/fetchFilesFromEndpoint.js";
+import { fetchFolders } from "../../src/lib/fetchFilesFromEndpoint.js";
 
-interface TreeViewClientProps { }
+interface TreeViewClientProps {
+  foldersSlug: string;
+}
 
-const TreeViewComponent = () => {
+const TreeViewComponent = ({ foldersSlug }: TreeViewClientProps) => {
   const tree = useTree<TreeData>({
     dataLoader: {
       getChildrenWithData: async (id) => {
-        if (id === "root") {
-          const folders = await fetchRootFolders<TreeData[]>();
+        const folders = await fetchFolders(id);
 
-          return folders
-            ? folders.map((folder) => ({
-              id: folder.id,
-              data: folder,
-              relationTo: folder.relationTo,
-            }))
-            : [];
-        }
-
-        const items = await fetchFolders<TreeData[]>(id);
-
-        return items ? items.map((item) => ({
-          id: item.id,
-          data: item,
-        })) : [];
+        return folders;
       },
-      getItem: async (itemId) => {
-        const item = await fetchItem<TreeData>(itemId);
-
+      getItem: (itemId) => {
         return {
-          id: itemId,
-          createdAt: item.createdAt,
-          relationTo: item.relationTo,
-          title: item.title,
-          updatedAt: item.updatedAt,
+          relationTo: "post",
+          title: "Pizza",
         }
       },
     },
     features: [asyncDataLoaderFeature, selectionFeature],
-    getItemName: (item) => {
-      if (!item.getItemData()) {
-        return "null"
-      }
-
-      return item.getItemData().title;
+    getItemName(item) {
+      return item.getItemData().title || "Unknown";
     },
-    indent: 20,
-    isItemFolder: (item) => Array.isArray(item.getItemData().data),
+    isItemFolder(item) {
+      return item.getItemData().relationTo === foldersSlug;
+    },
     rootItemId: "root",
   });
 
@@ -71,42 +50,44 @@ const TreeViewComponent = () => {
     e.stopPropagation();
   }
 
-  const mapUrl = (item: TreeData) => {
-    if (!item || !item.id || !item.relationTo) { return "#"; }
+  // const mapUrl = (item) => {
+  //   if (!item || !item.id || !item.relationTo) { return "#"; }
 
-    const isFolder = item.relationTo === "payload-folders";
-    const basePath = isFolder ? "browse-by-folder" : item.relationTo;
-    const prefix = isFolder ? "" : "collections/";
+  //   const isFolder = item.relationTo === foldersSlug;
+  //   const basePath = isFolder ? "browse-by-folder" : item.relationTo;
+  //   const prefix = isFolder ? "" : "collections/";
 
-    return `/admin/${prefix}${basePath}/${item.id}`;
-  }
+  //   return `/admin/${prefix}${basePath}/${item.id}`;
+  // }
 
   return (
     <NavGroup isOpen={false} label="Folders">
       <div {...tree.getContainerProps()} className="tree">
-        {tree.getItems().map((item) => (
-          <button
-            type="button"
-            {...item.getProps()}
-            key={item.getId()}
-            style={{ paddingLeft: `${item.getItemMeta().level * 20}px` }}
-          >
-            <div
-              className={cn("treeitem", {
-                expanded: item.isExpanded(),
-                focused: item.isFocused(),
-                folder: item.isFolder(),
-                selected: item.isSelected(),
-              })}
+        {tree.getItems().map((item) => {
+          return (
+            <button
+              type="button"
+              {...item.getProps()}
+              key={item.getId()}
+              style={{ paddingLeft: `${item.getItemMeta().level * 20}px` }}
             >
-              <ChevronIcon className="chevron-icon" />
-              <div className="treeitem-content">
-                <Link href={mapUrl(item.getItemData())} onClick={openClickHandler}>{item.getItemName()}</Link>
-                {item.isLoading() && <LoadingIcon />}
+              <div
+                className={cn("treeitem", {
+                  expanded: item.isExpanded(),
+                  focused: item.isFocused(),
+                  folder: item.isFolder(),
+                  selected: item.isSelected(),
+                })}
+              >
+                <ChevronIcon className="chevron-icon" />
+                <div className="treeitem-content">
+                  <Link href={"#"} onClick={openClickHandler}>{item.getItemData().title}</Link>
+                  {item.isLoading() && <LoadingIcon />}
+                </div>
               </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          )
+        })}
       </div>
     </NavGroup>
   );

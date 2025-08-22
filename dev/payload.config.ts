@@ -32,6 +32,7 @@ const buildConfigWithMemoryDB = async () => {
   return buildConfig({
     admin: {
       importMap: {
+        autoGenerate: false,
         baseDir: path.resolve(dirname),
       },
     },
@@ -76,6 +77,7 @@ const buildConfigWithMemoryDB = async () => {
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     sharp,
     typescript: {
+      autoGenerate: false,
       outputFile: path.resolve(dirname, 'payload-types.ts'),
     },
   })

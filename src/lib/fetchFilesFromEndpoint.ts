@@ -1,53 +1,49 @@
-const fetchRootFolders = async <T>(): Promise<T> => {
-  try {
-    const res = await fetch(`/api/folder-tree-view/root`, {
-      method: 'GET',
-    }).then((response) => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    })
+import { z } from "zod";
 
-    return res;
-  } catch (err) {
-    throw new Error('Error fetching root folders');
-  }
-}
+const FolderSchema = z.object({
+  id: z.string(),
+  data: z.object({
+    relationTo: z.string(),
+    title: z.string(),
+  }),
+})
 
-const fetchFolders = async <T>(id: string): Promise<T> => {
+const FoldersSchema = z.array(FolderSchema);
+
+type Folder = z.infer<typeof FolderSchema>;
+
+const fetchFolders = async (id: string): Promise<Folder[]> => {
   try {
     const res = await fetch(`/api/${id}/folder-tree-view/folder`, {
-      method: 'GET',
-    }).then((response) => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    })
+      method: "GET",
+    });
 
-    return res;
+    if (!res.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await res.json();
+    return FoldersSchema.parse(data);
   } catch (err) {
-    throw new Error('Error fetching folders');
+    throw new Error(`Error fetching folders: ${(err as Error).message}`);
   }
 }
 
-const fetchItem = async <T>(itemId: string): Promise<T> => {
+const fetchItem = async (itemId: string): Promise<Folder> => {
   try {
     const res = await fetch(`/api/${itemId}/folder-tree-view/item`, {
-      method: 'GET',
-    }).then((response) => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    })
+      method: "GET",
+    });
 
-    return res as T;
+    if (!res.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await res.json();
+    return FolderSchema.parse(data);
   } catch (err) {
-    console.error('Error fetching item:', err)
-    throw new Error('Error fetching item');
+    throw new Error(`Error fetching item: ${(err as Error).message}`);
   }
 }
 
-export { fetchFolders, fetchItem, fetchRootFolders }
+export { fetchFolders, fetchItem }

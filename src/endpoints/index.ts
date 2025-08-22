@@ -14,37 +14,60 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
       const collection = config.folders ? config.folders.slug ? config.folders.slug : 'payload-folders' : 'payload-folders';
 
       const folderId = getIdFromUrl(req.url ?? "");
+      const isRoot = folderId === "root";
 
       const folders = await req.payload.find({
         collection,
-        pagination: false,
         where: {
-          id: {
-            equals: folderId
-          }
-        }
-      });
-
-
-      const folder = folders.docs[0];
-
-      return Response.json(
-        folder.documentsAndFolders.docs
-          .map((doc) => {
-            return {
-              id: doc._id,
-              data: doc.relationTo === collection ? doc.value.documentsAndFolders.docs.map((doc) => {
-                return {
-                  id: doc._id,
-                  title: doc.value.title,
-                };
-              }) : undefined,
-              relationTo: doc.relationTo,
-              title: doc.relationTo === collection ? doc.value.name : doc.value.title,
-            };
+          ...(isRoot ? {
+            folder: {
+              equals: true,
+            }
+          } : {
+            id: {
+              equals: folderId
+            }
           })
-      );
+        }
+      })
 
+      let data;
+
+      if (isRoot) {
+        data = folders.docs.map((folder) => {
+          return {
+            id: folder.id,
+            data: {
+              relationTo: folder.documentsAndFolders ? collection : folder.relationTo,
+              title: folder.documentsAndFolders ? folder.name : "",
+            },
+          }
+        })
+      } else {
+        data = folders.docs.flatMap((folder) => {
+          return folder.documentsAndFolders.docs.map((doc) => {
+            if (doc.relationTo === collection) {
+              return {
+                id: doc.value.id,
+                data: {
+                  relationTo: doc.relationTo,
+                  title: doc.value.name,
+                }
+              }
+            }
+
+            return {
+              id: doc.value.id,
+              data: {
+                relationTo: doc.relationTo,
+                title: doc.value.title,
+              }
+            }
+          })
+        })
+      }
+
+      return Response.json(data)
     },
     method: 'get',
     path: '/:id/folder-tree-view/folder',
@@ -77,38 +100,6 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
     method: 'get',
     path: '/:id/folder-tree-view/item',
   },
-  root: {
-    handler: async (req) => {
-      await addDataAndFileToRequest(req);
-      const collection = config.folders ? config.folders.slug ? config.folders.slug : 'payload-folders' : 'payload-folders';
-
-      const folders = await req.payload.find({
-        collection,
-        pagination: false,
-        where: {
-          folder: {
-            equals: false,
-          }
-        }
-      });
-
-      return Response.json(folders.docs.map((folder) => {
-        return {
-          id: folder.id,
-          data: folder.documentsAndFolders.docs.map((doc) => {
-            return {
-              id: folder.id,
-              title: doc.value.title,
-            };
-          }),
-          relationTo: collection,
-          title: folder.name,
-        };
-      }));
-    },
-    method: 'get',
-    path: '/folder-tree-view/root',
-  }
 }) satisfies Endpoints
 
 export { endpoints }

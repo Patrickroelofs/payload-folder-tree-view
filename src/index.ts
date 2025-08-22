@@ -11,10 +11,9 @@ export type PayloadFolderTreeViewConfig = {
   disabled?: boolean
   /**
    * Show files in the folder tree view.
-   * This will enable the `/open-folder` endpoint to fetch files from folders.
-   * Can cause performance issues with large folder structures.
    *
    * @default true
+   * //TODO: Implement showFiles functionality
    */
   showFiles: boolean
 }
@@ -30,17 +29,12 @@ export const payloadFolderTreeView =
         ...(config.endpoints ?? []),
       ]
 
-      if (pluginOptions.showFiles) {
-        const pluginEndpoints = endpoints(config, pluginOptions);
+      const pluginEndpoints = endpoints(config, pluginOptions);
 
-        configEndpoints.push(
-          pluginEndpoints.item,
-          pluginEndpoints.folder,
-          pluginEndpoints.root
-        )
-      } else {
-        pluginOptions.showFiles = false;
-      }
+      configEndpoints.push(
+        pluginEndpoints.item,
+        pluginEndpoints.folder,
+      )
 
       return {
         ...config,
