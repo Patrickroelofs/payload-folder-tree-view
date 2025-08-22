@@ -1,37 +1,29 @@
 "use client";
 
+import type { TreeData } from "src/types.js";
+
 import {
   asyncDataLoaderFeature,
   selectionFeature,
 } from "@headless-tree/core";
 import { useTree } from "@headless-tree/react";
-import { Link } from "@payloadcms/ui";
-import cn from "classnames";
+import { ChevronIcon, Link, NavGroup } from "@payloadcms/ui";
 
 import "./styles.scss";
 
+import cn from "classnames";
 import React from 'react';
 
-import { fetchFolders, fetchItem } from "../../src/lib/fetchFilesFromEndpoint.js";
+import { fetchFolders, fetchItem, fetchRootFolders } from "../../src/lib/fetchFilesFromEndpoint.js";
 
-interface TreeViewClientProps {
-
-}
-
-type TreeData = {
-  createdAt: string;
-  data?: TreeData[];
-  id: string;
-  title: string;
-  updatedAt: string;
-}
+interface TreeViewClientProps { }
 
 const TreeViewComponent = () => {
   const tree = useTree<TreeData>({
     dataLoader: {
       getChildrenWithData: async (id) => {
         if (id === "root") {
-          const folders = await fetchFolders<TreeData[]>(id);
+          const folders = await fetchRootFolders<TreeData[]>();
 
           return folders
             ? folders.map((folder) => ({
@@ -77,30 +69,33 @@ const TreeViewComponent = () => {
   }
 
   return (
-    <div {...tree.getContainerProps()} className="tree">
-      {tree.getItems().map((item) => (
-        <button
-          type="button"
-          {...item.getProps()}
-          key={item.getId()}
-          style={{ paddingLeft: `${item.getItemMeta().level * 20}px` }}
-        >
-          <div
-            className={cn("treeitem", {
-              expanded: item.isExpanded(),
-              focused: item.isFocused(),
-              folder: item.isFolder(),
-              selected: item.isSelected(),
-            })}
+    <NavGroup isOpen={false} label="Folders">
+      <div {...tree.getContainerProps()} className="tree">
+        {tree.getItems().map((item) => (
+          <button
+            type="button"
+            {...item.getProps()}
+            key={item.getId()}
+            style={{ paddingLeft: `${item.getItemMeta().level * 20}px` }}
           >
-            <div className="treeitem-content">
-              <Link href="#" onClick={openClickHandler}>{item.getItemName()}</Link>
-              {item.isLoading() && <span className="loading-indicator">Loading...</span>}
+            <div
+              className={cn("treeitem", {
+                expanded: item.isExpanded(),
+                focused: item.isFocused(),
+                folder: item.isFolder(),
+                selected: item.isSelected(),
+              })}
+            >
+              <ChevronIcon className="chevron-icon" />
+              <div className="treeitem-content">
+                <Link href="#" onClick={openClickHandler}>{item.getItemName()}</Link>
+                {item.isLoading() && <span className="loading-indicator">Loading...</span>}
+              </div>
             </div>
-          </div>
-        </button>
-      ))}
-    </div>
+          </button>
+        ))}
+      </div>
+    </NavGroup>
   );
 };
 

@@ -1,6 +1,6 @@
 import { type Config } from 'payload'
 
-import { endpoints } from './endpoints/open-folder.js'
+import { endpoints } from './endpoints/index.js'
 
 export type PayloadFolderTreeViewConfig = {
   /**
@@ -34,8 +34,9 @@ export const payloadFolderTreeView =
         const pluginEndpoints = endpoints(config, pluginOptions);
 
         configEndpoints.push(
-          pluginEndpoints.openFolder,
-          pluginEndpoints.files,
+          pluginEndpoints.item,
+          pluginEndpoints.folder,
+          pluginEndpoints.root
         )
       } else {
         pluginOptions.showFiles = false;

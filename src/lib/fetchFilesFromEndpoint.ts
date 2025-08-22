@@ -1,3 +1,20 @@
+const fetchRootFolders = async <T>(): Promise<T> => {
+  try {
+    const res = await fetch(`/api/folder-tree-view/root`, {
+      method: 'GET',
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      return response.json()
+    })
+
+    return res;
+  } catch (err) {
+    throw new Error('Error fetching root folders');
+  }
+}
+
 const fetchFolders = async <T>(id: string): Promise<T> => {
   try {
     const res = await fetch(`/api/${id}/folder-tree-view/folder`, {
@@ -33,4 +50,4 @@ const fetchItem = async <T>(itemId: string): Promise<T> => {
   }
 }
 
-export { fetchFolders, fetchItem }
+export { fetchFolders, fetchItem, fetchRootFolders }
