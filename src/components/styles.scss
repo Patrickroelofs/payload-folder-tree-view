@@ -17,10 +17,16 @@
     padding: 6px 10px;
     position: relative;
     border-radius: 8px;
-    transition: background-color .2s ease;
+    transition: all .2s ease;
     cursor: pointer;
     display: flex;
     align-items: center;
+}
+
+.treeitem-content {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
 }
 
 .treeitem:hover {

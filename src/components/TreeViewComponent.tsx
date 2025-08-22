@@ -14,6 +14,7 @@ import "./styles.scss";
 import cn from "classnames";
 import React from 'react';
 
+import { LoadingIcon } from "../../src/icons/Loading/index.js";
 import { fetchFolders, fetchItem, fetchRootFolders } from "../../src/lib/fetchFilesFromEndpoint.js";
 
 interface TreeViewClientProps { }
@@ -101,7 +102,7 @@ const TreeViewComponent = () => {
               <ChevronIcon className="chevron-icon" />
               <div className="treeitem-content">
                 <Link href={mapUrl(item.getItemData())} onClick={openClickHandler}>{item.getItemName()}</Link>
-                {item.isLoading() && <span className="loading-indicator">Loading...</span>}
+                {item.isLoading() && <LoadingIcon />}
               </div>
             </div>
           </button>

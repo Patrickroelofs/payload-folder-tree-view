@@ -1,0 +1,16 @@
+@import '@payloadcms/ui/scss';
+
+@layer payload-default {
+  .icon--loading {
+    height: $baseline;
+    width: $baseline;
+    shape-rendering: auto;
+    animation: icon-rotate 1s linear infinite;
+  }
+
+  @keyframes icon-rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
