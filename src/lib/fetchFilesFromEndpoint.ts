@@ -3,6 +3,8 @@ import { z } from "zod";
 const FolderSchema = z.object({
   id: z.string(),
   data: z.object({
+    hasChildren: z.boolean().optional(),
+    isFolder: z.boolean().optional(),
     relationTo: z.string(),
     title: z.string(),
   }),

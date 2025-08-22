@@ -4,6 +4,12 @@ import { endpoints } from './endpoints/index.js'
 
 export type PayloadFolderTreeViewConfig = {
   /**
+   * Whether the folder tree view root is expanded by default.
+   * 
+   * @default false
+   */
+  defaultOpen?: boolean;
+  /**
    * Whether the folder tree view plugin is enabled.
    * 
    * @default false
@@ -46,6 +52,7 @@ export const payloadFolderTreeView =
               {
                 path: 'payload-folder-tree-view/rsc#TreeViewServer',
                 serverProps: {
+                  defaultOpen: pluginOptions.defaultOpen,
                   showFiles: pluginOptions.showFiles,
                 }
               }

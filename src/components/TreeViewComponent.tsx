@@ -1,5 +1,8 @@
 "use client";
 
+import type {
+  ItemInstance
+} from "@headless-tree/core";
 import type { TreeData } from "src/types.js";
 
 import {
@@ -18,10 +21,11 @@ import { LoadingIcon } from "../../src/icons/Loading/index.js";
 import { fetchFolders } from "../../src/lib/fetchFilesFromEndpoint.js";
 
 interface TreeViewClientProps {
+  defaultOpen: boolean;
   foldersSlug: string;
 }
 
-const TreeViewComponent = ({ foldersSlug }: TreeViewClientProps) => {
+const TreeViewComponent = ({ defaultOpen, foldersSlug }: TreeViewClientProps) => {
   const tree = useTree<TreeData>({
     dataLoader: {
       getChildrenWithData: async (id) => {
@@ -30,10 +34,7 @@ const TreeViewComponent = ({ foldersSlug }: TreeViewClientProps) => {
         return folders;
       },
       getItem: (itemId) => {
-        return {
-          relationTo: "post",
-          title: "Pizza",
-        }
+        // TODO: required to implement but its never used?
       },
     },
     features: [asyncDataLoaderFeature, selectionFeature],
@@ -41,7 +42,7 @@ const TreeViewComponent = ({ foldersSlug }: TreeViewClientProps) => {
       return item.getItemData().title || "Unknown";
     },
     isItemFolder(item) {
-      return item.getItemData().relationTo === foldersSlug;
+      return item.getItemData().isFolder || false;
     },
     rootItemId: "root",
   });
@@ -50,18 +51,20 @@ const TreeViewComponent = ({ foldersSlug }: TreeViewClientProps) => {
     e.stopPropagation();
   }
 
-  // const mapUrl = (item) => {
-  //   if (!item || !item.id || !item.relationTo) { return "#"; }
+  const mapUrl = (item: ItemInstance<TreeData>) => {
+    const id = item.getId();
+    const { relationTo } = item.getItemData();
+    if (!item || !id || !relationTo) { return "#"; }
 
-  //   const isFolder = item.relationTo === foldersSlug;
-  //   const basePath = isFolder ? "browse-by-folder" : item.relationTo;
-  //   const prefix = isFolder ? "" : "collections/";
+    const isFolder = relationTo === foldersSlug;
+    const basePath = isFolder ? "browse-by-folder" : relationTo;
+    const prefix = isFolder ? "" : "collections/";
 
-  //   return `/admin/${prefix}${basePath}/${item.id}`;
-  // }
+    return `/admin/${prefix}${basePath}/${id}`;
+  }
 
   return (
-    <NavGroup isOpen={false} label="Folders">
+    <NavGroup isOpen={defaultOpen} label="Folders">
       <div {...tree.getContainerProps()} className="tree">
         {tree.getItems().map((item) => {
           return (
@@ -79,9 +82,9 @@ const TreeViewComponent = ({ foldersSlug }: TreeViewClientProps) => {
                   selected: item.isSelected(),
                 })}
               >
-                <ChevronIcon className="chevron-icon" />
+                {item.isFolder() && <ChevronIcon className="chevron-icon" />}
                 <div className="treeitem-content">
-                  <Link href={"#"} onClick={openClickHandler}>{item.getItemData().title}</Link>
+                  <Link href={mapUrl(item)} onClick={openClickHandler}>{item.getItemData().title}</Link>
                   {item.isLoading() && <LoadingIcon />}
                 </div>
               </div>

@@ -9,6 +9,8 @@ export const TreeViewServer = (props: PayloadFolderTreeViewConfig & ServerCompon
 
   return (
     <TreeViewComponent
-      foldersSlug={foldersSlug} />
+      defaultOpen={props.defaultOpen || false}
+      foldersSlug={foldersSlug}
+    />
   );
 }

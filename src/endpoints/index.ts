@@ -38,6 +38,7 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
           return {
             id: folder.id,
             data: {
+              isFolder: true,
               relationTo: folder.documentsAndFolders ? collection : folder.relationTo,
               title: folder.documentsAndFolders ? folder.name : "",
             },
@@ -50,8 +51,9 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
               return {
                 id: doc.value.id,
                 data: {
+                  isFolder: true,
                   relationTo: doc.relationTo,
-                  title: doc.value.name,
+                  title: doc.value.name
                 }
               }
             }

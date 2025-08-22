@@ -6,6 +6,8 @@ export interface Endpoints {
 }
 
 export type TreeData = {
+  hasChildren?: boolean;
+  isFolder?: boolean;
   relationTo: string;
   title: string;
 }
