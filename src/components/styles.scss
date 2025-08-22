@@ -38,7 +38,7 @@
 .treeitem.folder > .icon--chevron {
     display: block;
     flex-shrink: 0;
-    transition: transform 0.1s ease-in-out;
+    transition: transform var(--nav-trans-time) ease-in-out;
     transform: rotate(-90deg);
 }
 
