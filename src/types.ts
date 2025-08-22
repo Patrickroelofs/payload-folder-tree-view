@@ -10,6 +10,7 @@ export type TreeData = {
   createdAt: string;
   data?: TreeData[];
   id: string;
+  relationTo: string;
   title: string;
   updatedAt: string;
 }

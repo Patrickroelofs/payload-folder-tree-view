@@ -29,6 +29,7 @@ const TreeViewComponent = () => {
             ? folders.map((folder) => ({
               id: folder.id,
               data: folder,
+              relationTo: folder.relationTo,
             }))
             : [];
         }
@@ -46,6 +47,7 @@ const TreeViewComponent = () => {
         return {
           id: itemId,
           createdAt: item.createdAt,
+          relationTo: item.relationTo,
           title: item.title,
           updatedAt: item.updatedAt,
         }
@@ -68,6 +70,16 @@ const TreeViewComponent = () => {
     e.stopPropagation();
   }
 
+  const mapUrl = (item: TreeData) => {
+    if (!item || !item.id || !item.relationTo) { return "#"; }
+
+    const isFolder = item.relationTo === "payload-folders";
+    const basePath = isFolder ? "browse-by-folder" : item.relationTo;
+    const prefix = isFolder ? "" : "collections/";
+
+    return `/admin/${prefix}${basePath}/${item.id}`;
+  }
+
   return (
     <NavGroup isOpen={false} label="Folders">
       <div {...tree.getContainerProps()} className="tree">
@@ -88,7 +100,7 @@ const TreeViewComponent = () => {
             >
               <ChevronIcon className="chevron-icon" />
               <div className="treeitem-content">
-                <Link href="#" onClick={openClickHandler}>{item.getItemName()}</Link>
+                <Link href={mapUrl(item.getItemData())} onClick={openClickHandler}>{item.getItemName()}</Link>
                 {item.isLoading() && <span className="loading-indicator">Loading...</span>}
               </div>
             </div>

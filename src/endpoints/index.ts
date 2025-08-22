@@ -18,25 +18,12 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
       const folders = await req.payload.find({
         collection,
         pagination: false,
-        where: folderId === "root"
-          ? { folder: { equals: false } }
-          : { id: { equals: folderId } },
+        where: {
+          id: {
+            equals: folderId
+          }
+        }
       });
-
-      if (folderId === "root") {
-        return Response.json(folders.docs.map((folder) => {
-          return {
-            id: folder.id,
-            data: folder.documentsAndFolders.docs.map((doc) => {
-              return {
-                id: folder.id,
-                title: doc.value.title,
-              };
-            }),
-            title: folder.name,
-          };
-        }));
-      }
 
 
       const folder = folders.docs[0];
@@ -52,6 +39,7 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
                   title: doc.value.title,
                 };
               }) : undefined,
+              relationTo: doc.relationTo,
               title: doc.relationTo === collection ? doc.value.name : doc.value.title,
             };
           })
@@ -82,6 +70,7 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
 
       return Response.json({
         id: folder.id,
+        relationTo: folder.relationTo,
         title: folder.name,
       });
     },
@@ -112,6 +101,7 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
               title: doc.value.title,
             };
           }),
+          relationTo: collection,
           title: folder.name,
         };
       }));
