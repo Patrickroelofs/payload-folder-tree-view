@@ -10,7 +10,7 @@ import {
   selectionFeature,
 } from "@headless-tree/core";
 import { useTree } from "@headless-tree/react";
-import { ChevronIcon, Link, NavGroup } from "@payloadcms/ui";
+import { ChevronIcon, DocumentIcon, FolderIcon, Link, NavGroup } from "@payloadcms/ui";
 
 import "./styles.scss";
 
@@ -84,7 +84,10 @@ const TreeViewComponent = ({ defaultOpen, foldersSlug }: TreeViewClientProps) =>
               >
                 {item.isFolder() && <ChevronIcon className="chevron-icon" />}
                 <div className="treeitem-content">
-                  <Link href={mapUrl(item)} onClick={openClickHandler}>{item.getItemData().title}</Link>
+                  <div className="treeitem-label">
+                    {item.isFolder() ? <FolderIcon /> : <DocumentIcon />}
+                    <Link href={mapUrl(item)} onClick={openClickHandler}>{item.getItemData().title}</Link>
+                  </div>
                   {item.isLoading() && <LoadingIcon />}
                 </div>
               </div>
