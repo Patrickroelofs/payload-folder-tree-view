@@ -1,62 +1,101 @@
-import type { PayloadFolderTreeViewConfig } from 'src/index.js';
-import type { FlatTree } from 'src/lib/buildFolderTree.js';
+"use client";
 
-import React from 'react';
+import type {
+  ItemInstance
+} from "@headless-tree/core";
+import type { TreeData } from "src/types.js";
+
+import {
+  asyncDataLoaderFeature,
+  selectionFeature,
+} from "@headless-tree/core";
+import { useTree } from "@headless-tree/react";
+import { ChevronIcon, DocumentIcon, FolderIcon, Link, NavGroup } from "@payloadcms/ui";
 
 import "./styles.scss";
-import { ExpandedNavGroup } from './ExpandedNavGroup/ExpandedNavGroup.js';
+
+import cn from "classnames";
+import React from 'react';
+
+import { LoadingIcon } from "../../src/icons/Loading/index.js";
+import { fetchFolders } from "../../src/lib/fetchFilesFromEndpoint.js";
 
 interface TreeViewClientProps {
-  data: FlatTree;
-  pluginConfig: PayloadFolderTreeViewConfig
+  defaultOpen: boolean;
+  foldersSlug: string;
 }
 
-const TreeViewComponent: React.FC<TreeViewClientProps> = ({ data, pluginConfig }) => {
-  const getFolderLabel = (id: string) => data.items[id]?.title || id;
+const TreeViewComponent = ({ defaultOpen, foldersSlug }: TreeViewClientProps) => {
+  const tree = useTree<TreeData>({
+    dataLoader: {
+      getChildrenWithData: async (id) => {
+        const folders = await fetchFolders(id);
 
-  const renderFolders = (folderIds: string[], depth = 0): React.ReactNode => {
-    if (!folderIds.length) { return null; }
+        return folders;
+      },
+      getItem: (itemId) => {
+        // TODO: required to implement but its never used?
+      },
+    },
+    features: [asyncDataLoaderFeature, selectionFeature],
+    getItemName(item) {
+      return item.getItemData().title || "Unknown";
+    },
+    isItemFolder(item) {
+      return item.getItemData().isFolder || false;
+    },
+    rootItemId: "root",
+  });
 
-    return (
-      <ul data-depth={depth}>
-        {folderIds.map(folderId => {
-          const folderNode = data.items[folderId];
-          if (!folderNode) { return null; }
+  const openClickHandler = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.stopPropagation();
+  }
 
-          const childFolderIds =
-            (folderNode.folders || []).map(f => (typeof f === 'string' ? f : f.id));
+  const mapUrl = (item: ItemInstance<TreeData>) => {
+    const id = item.getId();
+    const { relationTo } = item.getItemData();
+    if (!item || !id || !relationTo) { return "#"; }
 
-          const hasFolders = childFolderIds.length > 0;
+    const isFolder = relationTo === foldersSlug;
+    const basePath = isFolder ? "browse-by-folder" : relationTo;
+    const prefix = isFolder ? "" : "collections/";
 
-          return (
-            <ExpandedNavGroup
-              data-depth={depth}
-              fileCount={folderNode.fileCount}
-              folderCount={folderNode.folderCount}
-              folderId={folderId}
-              isOpen={false}
-              key={folderId}
-              label={getFolderLabel(folderId)}
-              pluginConfig={pluginConfig}
-            >
-              {hasFolders && renderFolders(childFolderIds, depth + 1)}
-            </ExpandedNavGroup>
-          );
-        })}
-      </ul>
-    );
-  };
+    return `/admin/${prefix}${basePath}/${id}`;
+  }
 
   return (
-    <div className="tree-view-component">
-      <ExpandedNavGroup fileCount={data.rootIds.length} folderCount={data.rootIds.length} folderId="root" isOpen={false} label="Folders" pluginConfig={pluginConfig}>
-        {data.rootIds.length === 0 ? (
-          <span className="empty-state">No folders found...</span>
-        ) : (
-          renderFolders(data.rootIds, 0)
-        )}
-      </ExpandedNavGroup>
-    </div>
+    <NavGroup isOpen={defaultOpen} label="Folders">
+      <div {...tree.getContainerProps()} className="tree">
+        {tree.getItems().map((item) => {
+          return (
+            <button
+              type="button"
+              {...item.getProps()}
+              key={item.getId()}
+              style={{ paddingLeft: `${item.getItemMeta().level * 20}px` }}
+            >
+              <div
+                className={cn("treeitem", {
+                  expanded: item.isExpanded(),
+                  focused: item.isFocused(),
+                  folder: item.isFolder(),
+                  selected: item.isSelected(),
+                })}
+              >
+                {item.isFolder() && <ChevronIcon className="chevron-icon" />}
+                <div className="treeitem-content">
+                  <div className="treeitem-label">
+                    {item.isFolder() ? <FolderIcon /> : <DocumentIcon />}
+                    <Link href={mapUrl(item)} onClick={openClickHandler}>{item.getItemData().title}</Link>
+                  </div>
+                  {item.isLoading() && <LoadingIcon />}
+                </div>
+              </div>
+            </button>
+          )
+        })}
+      </div>
+    </NavGroup>
   );
 };
 

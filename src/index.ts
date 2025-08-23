@@ -1,8 +1,14 @@
 import { type Config } from 'payload'
 
-import { endpoints } from './endpoints/open-folder.js'
+import { endpoints } from './endpoints/index.js'
 
 export type PayloadFolderTreeViewConfig = {
+  /**
+   * Whether the folder tree view root is expanded by default.
+   * 
+   * @default false
+   */
+  defaultOpen?: boolean;
   /**
    * Whether the folder tree view plugin is enabled.
    * 
@@ -11,10 +17,9 @@ export type PayloadFolderTreeViewConfig = {
   disabled?: boolean
   /**
    * Show files in the folder tree view.
-   * This will enable the `/open-folder` endpoint to fetch files from folders.
-   * Can cause performance issues with large folder structures.
    *
    * @default true
+   * //TODO: Implement showFiles functionality
    */
   showFiles: boolean
 }
@@ -30,15 +35,12 @@ export const payloadFolderTreeView =
         ...(config.endpoints ?? []),
       ]
 
-      if (pluginOptions.showFiles) {
-        const pluginEndpoints = endpoints(config, pluginOptions);
+      const pluginEndpoints = endpoints(config, pluginOptions);
 
-        configEndpoints.push(
-          pluginEndpoints.openFolder,
-        )
-      } else {
-        pluginOptions.showFiles = false;
-      }
+      configEndpoints.push(
+        pluginEndpoints.item,
+        pluginEndpoints.folder,
+      )
 
       return {
         ...config,
@@ -50,6 +52,7 @@ export const payloadFolderTreeView =
               {
                 path: 'payload-folder-tree-view/rsc#TreeViewServer',
                 serverProps: {
+                  defaultOpen: pluginOptions.defaultOpen,
                   showFiles: pluginOptions.showFiles,
                 }
               }

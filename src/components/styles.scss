@@ -1,20 +1,69 @@
-.tree-view-component {
+.tree {
   width: 100%;
-
-  ul {
-    padding-left: 1em;
-
-     li {
-      list-style: none;
-     }
-  }
-
-  .folder-icon-wrapper {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    .icon {
-      margin-right: 0.5em;
-    }
-  }
 }
+
+.tree button[role="treeitem"] {
+    display: flex;
+    background: transparent;
+    border: none;
+    width: 100%;
+    padding: 0 0 2px 0;
+}
+
+.treeitem {
+    width: 100%;
+    text-align: left;
+    background-color: var(--theme-elevation-0);
+    padding: 6px 10px;
+    position: relative;
+    border-radius: 8px;
+    transition: all .2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.treeitem-content {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.treeitem-label {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+
+    .icon {
+        color: var(--theme-elevation-400);
+    }
+}
+
+.treeitem:hover {
+    background-color: var(--theme-elevation-50);
+}
+
+.treeitem.selected {
+    background-color: var(--theme-elevation-100);
+}
+
+.treeitem > .icon--chevron {
+    display: none;
+}
+
+.treeitem.folder > .icon--chevron {
+    display: block;
+    flex-shrink: 0;
+    transition: transform var(--nav-trans-time) ease-in-out;
+    transform: rotate(-90deg);
+}
+
+.treeitem.folder.expanded > .icon--chevron {
+    transform: rotate(0deg);
+}
+
+.treeitem:not(.folder) {
+    padding-left: 16px;
+}
+

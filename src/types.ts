@@ -1,11 +1,13 @@
 import type { Endpoint } from "payload";
 
 export interface Endpoints {
-  openFolder: Omit<Endpoint, 'root'>;
+  folder: Omit<Endpoint, 'root'>;
+  item: Omit<Endpoint, 'root'>;
 }
 
-export type File = {
-  id: string;
+export type TreeData = {
+  hasChildren?: boolean;
+  isFolder?: boolean;
   relationTo: string;
   title: string;
 }

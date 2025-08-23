@@ -47,6 +47,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
+    "@headless-tree/core": "^1.4.0",
+    "@headless-tree/react": "^1.4.0",
     "@payloadcms/db-mongodb": "3.52.0",
     "@payloadcms/db-postgres": "3.52.0",
     "@payloadcms/db-sqlite": "3.52.0",
@@ -61,6 +63,7 @@
     "@types/node": "^22.5.4",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
+    "classnames": "^2.5.1",
     "copyfiles": "2.4.1",
     "cross-env": "^7.0.3",
     "eslint": "^9.23.0",
@@ -79,7 +82,8 @@
     "sort-package-json": "^2.10.0",
     "typescript": "5.7.3",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.1.2"
+    "vitest": "^3.1.2",
+    "zod": "^4.0.17"
   },
   "peerDependencies": {
     "payload": "^3.37.0"
