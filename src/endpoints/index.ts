@@ -6,6 +6,15 @@ import { addDataAndFileToRequest } from "payload";
 
 import { getIdFromUrl } from "../lib/getIdFromUrl.js";
 
+// TODO: Get doc type from payload
+type Doc = {
+  relationTo: string;
+  value: {
+    id: string;
+    name?: string;
+    title?: string;
+  };
+}
 
 const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => Endpoints = (config, pluginConfig) => ({
   folder: {
@@ -46,7 +55,7 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
         })
       } else {
         data = folders.docs.flatMap((folder) => {
-          return folder.documentsAndFolders.docs.map((doc) => {
+          return folder.documentsAndFolders.docs.map((doc: Doc) => {
             if (doc.relationTo === collection) {
               return {
                 id: doc.value.id,

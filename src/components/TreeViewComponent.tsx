@@ -35,6 +35,11 @@ const TreeViewComponent = ({ defaultOpen, foldersSlug }: TreeViewClientProps) =>
       },
       getItem: (itemId) => {
         // TODO: required to implement but its never used?
+
+        return {
+          relationTo: 'unknown',
+          title: 'Unknown',
+        };
       },
     },
     features: [asyncDataLoaderFeature, selectionFeature],
