@@ -34,9 +34,17 @@
     gap: 8px;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 
     .icon {
+        flex-shrink: 0;
         color: var(--theme-elevation-400);
+    }
+
+    > a {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 
