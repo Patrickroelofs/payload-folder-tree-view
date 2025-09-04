@@ -54,6 +54,7 @@ const buildConfigWithMemoryDB = async () => {
       {
         slug: 'media',
         fields: [],
+        folders: true,
         upload: {
           staticDir: path.resolve(dirname, 'media'),
         },
@@ -72,7 +73,7 @@ const buildConfigWithMemoryDB = async () => {
       payloadFolderTreeView({
         defaultOpen: true,
         disabled: false,
-        showFiles: false,
+        showFiles: true,
       })
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',

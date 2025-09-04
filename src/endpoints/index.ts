@@ -24,6 +24,7 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
 
       const folderId = getIdFromUrl(req.url ?? "");
       const isRoot = folderId === "root";
+      const showFiles = pluginConfig.showFiles ?? true;
 
       const folders = await req.payload.find({
         collection,
@@ -56,6 +57,8 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
       } else {
         data = folders.docs.flatMap((folder) => {
           return folder.documentsAndFolders.docs.map((doc: Doc) => {
+            if (!showFiles && doc.relationTo !== collection) { return null; }
+
             if (doc.relationTo === collection) {
               return {
                 id: doc.value.id,
@@ -67,14 +70,19 @@ const endpoints: (config: Config, pluginConfig: PayloadFolderTreeViewConfig) => 
               }
             }
 
+            const itemCollection = doc.relationTo;
+            const itemConfig = req.payload.collections[itemCollection];
+            const findTitle = itemConfig?.config?.admin?.useAsTitle;
+            const title = doc.value[findTitle as keyof typeof doc.value] || doc.value.id;
+
             return {
               id: doc.value.id,
               data: {
                 relationTo: doc.relationTo,
-                title: doc.value.title,
+                title,
               }
             }
-          })
+          }).filter(Boolean)
         })
       }
 
