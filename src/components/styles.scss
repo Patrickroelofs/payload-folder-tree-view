@@ -5,6 +5,15 @@
     padding: 10px 0;
 }
 
+.folder-loading {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    padding: 4px;
+    background-color: var(--theme-elevation-100);
+    border-radius: 8px;
+}
+
 .tree {
   width: 100%;
 }

@@ -104,7 +104,11 @@ const TreeViewComponent = ({ defaultOpen, foldersSlug }: TreeViewClientProps) =>
                         {item.isFolder() ? <FolderIcon /> : <DocumentIcon />}
                         <Link href={mapUrl(item)} onClick={openClickHandler}>{item.getItemData().title}</Link>
                       </div>
-                      {item.isLoading() && <LoadingIcon />}
+                      {item.isLoading() && (
+                        <div className="folder-loading">
+                          <LoadingIcon />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </button>
