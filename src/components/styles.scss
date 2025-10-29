@@ -52,6 +52,8 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        text-underline-offset: 4px;
+        text-decoration-color: var(--theme-elevation-300);
     }
 }
 
