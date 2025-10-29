@@ -15,7 +15,7 @@ import { ChevronIcon, DocumentIcon, FolderIcon, Link, NavGroup } from "@payloadc
 import "./styles.scss";
 
 import cn from "classnames";
-import React from 'react';
+import React, { useState } from 'react';
 
 import { LoadingIcon } from "../../src/icons/Loading/index.js";
 import { fetchFolders } from "../../src/lib/fetchFilesFromEndpoint.js";
@@ -26,14 +26,17 @@ interface TreeViewClientProps {
 }
 
 const TreeViewComponent = ({ defaultOpen, foldersSlug }: TreeViewClientProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const tree = useTree<TreeData>({
     dataLoader: {
       getChildrenWithData: async (id) => {
         const folders = await fetchFolders(id);
 
+        setIsLoading(false);
         return folders;
       },
-      getItem: (itemId) => {
+      getItem: () => {
         // TODO: required to implement but its never used?
 
         return {
@@ -71,34 +74,44 @@ const TreeViewComponent = ({ defaultOpen, foldersSlug }: TreeViewClientProps) =>
   return (
     <NavGroup isOpen={defaultOpen} label="Folders">
       <div {...tree.getContainerProps()} className="tree">
-        {tree.getItems().map((item) => {
-          return (
-            <button
-              type="button"
-              {...item.getProps()}
-              key={item.getId()}
-              style={{ paddingLeft: `${item.getItemMeta().level * 20}px` }}
-            >
-              <div
-                className={cn("treeitem", {
-                  expanded: item.isExpanded(),
-                  focused: item.isFocused(),
-                  folder: item.isFolder(),
-                  selected: item.isSelected(),
-                })}
-              >
-                {item.isFolder() && <ChevronIcon className="chevron-icon" />}
-                <div className="treeitem-content">
-                  <div className="treeitem-label">
-                    {item.isFolder() ? <FolderIcon /> : <DocumentIcon />}
-                    <Link href={mapUrl(item)} onClick={openClickHandler}>{item.getItemData().title}</Link>
+        {isLoading && (
+          <div className="loading-indicator">
+            <LoadingIcon />
+          </div>
+        )}
+
+        {!isLoading && (
+          <div className="tree-content animate-in">
+            {tree.getItems().map((item) => {
+              return (
+                <button
+                  type="button"
+                  {...item.getProps()}
+                  key={item.getId()}
+                  style={{ paddingLeft: `${item.getItemMeta().level * 20}px` }}
+                >
+                  <div
+                    className={cn("treeitem", {
+                      expanded: item.isExpanded(),
+                      focused: item.isFocused(),
+                      folder: item.isFolder(),
+                      selected: item.isSelected(),
+                    })}
+                  >
+                    {item.isFolder() && <ChevronIcon className="chevron-icon" />}
+                    <div className="treeitem-content">
+                      <div className="treeitem-label">
+                        {item.isFolder() ? <FolderIcon /> : <DocumentIcon />}
+                        <Link href={mapUrl(item)} onClick={openClickHandler}>{item.getItemData().title}</Link>
+                      </div>
+                      {item.isLoading() && <LoadingIcon />}
+                    </div>
                   </div>
-                  {item.isLoading() && <LoadingIcon />}
-                </div>
-              </div>
-            </button>
-          )
-        })}
+                </button>
+              )
+            })}
+          </div>
+        )}
       </div>
     </NavGroup>
   );
